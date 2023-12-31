@@ -17,16 +17,16 @@ export default function Info() {
       <p>M.S. Computer Science at Florida State University</p>
       <p>Captain and 4 year letterman Ohio State soccer</p>
       <Button variant="link" href="https://www.linkedin.com/in/gil-pratte" >
-        <i title="LinkedIn" className="fa-brands fa-linkedin fa-2x"></i>
+        <i title="LinkedIn" className="fa-brands fa-linkedin fa-3x"></i>
       </Button>
       &nbsp;&nbsp;&nbsp;
       <Button variant="link" href="https://github.com/gpratte" >
-        <i title="GitHub" className="fa-brands fa-github-square fa-2x"></i>
+        <i title="GitHub" className="fa-brands fa-github-square fa-3x"></i>
       </Button>
       &nbsp;&nbsp;&nbsp;
       <Button variant="link"
               onClick={goToBlog} >
-        <i title="Blog" className="fa-solid fa-blog fa-2x"></i>
+        <i title="Blog" className="fa-solid fa-blog fa-3x"></i>
       </Button>
     </div>
   )

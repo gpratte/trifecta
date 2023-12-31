@@ -1,0 +1,18 @@
+.blog-header {
+    text-align: center;
+    margin-top: 25px;
+    margin-left: 25%;
+    margin-right: 25%;
+}
+.blog-message {
+    text-align: center;
+    margin-top: 25px;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+.blog-main {
+    font-size: 125%;
+    margin-top: 50px;
+    margin-left: 20%;
+    margin-right: 20%;
+}
