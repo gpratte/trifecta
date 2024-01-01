@@ -21,9 +21,7 @@ function Blog() {
             <>
               <h1 style={{textAlign: "center", marginTop: 50}}>{entry.header}</h1>
               <p style={{textAlign: "center"}}>{entry.createdAt}</p>
-              {entry.body.map(body =>
-                ReactHtmlParser(body)
-              )}
+              {ReactHtmlParser(entry.body)}
               <hr/>
             </>
           )
