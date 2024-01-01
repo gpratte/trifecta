@@ -6,6 +6,399 @@ export type BlogData = {
 
 export const blogEntries: Array<BlogData> = [
   {
+    header: "Upgrade Client and Server",
+    body: `<p>December 26th 2023 deployed server and client upgrades for the <a href="http://www.texastoc.com">http://www.texastoc.com</a>  website.</p>
+      <p>Server upgrade old <a href="https://github.com/gpratte/texastoc-v4-integration-testing">https://github.com/gpratte/texastoc-v4-integration-testing</a> to new <a href="https://github.com/gpratte/texastoc-server-v5">https://github.com/gpratte/texastoc-server-v5</a> </p>
+      <ul>
+        <li>upgrade from Java 11 to Java 17</li>
+        <li>upgrade from SpringBoot 2.4.4 to 3.1.2</li>
+        <li>renamed some database columns to avoid H2 reserved words</li>
+      </ul>
+      <p>Client upgrades old <a href="https://github.com/gpratte/texastoc-v4-client">https://github.com/gpratte/texastoc-v4-client</a>  to new <a href="https://github.com/gpratte/texastoc-client-v6">https://github.com/gpratte/texastoc-client-v6</a> </p>
+      <ul>
+        <li>upgrade from React 16.12.0 to 18.2.0</li>
+        <li>moved from react classes to react functional components/hooks</li>
+        <li>using react state more so less dependent on redux</li>
+        <li>show spinner when component loading</li>
+        <li>vastly improved notification components</li>
+        <li>persist access token in browser local storage to survive website reload</li>
+        <li>using axios request interceptor to check expired token and set auth header</li>
+        <li>fix linter problems</li>
+      </ul>`,
+    createdAt: "December 27, 2023"
+  },
+  {
+    header: "Observability: Correlation Id, Logging and Exceptions",
+    body: `<p>Now that there is chaos in the application (server side) the New Relic synthetic monitors are raising alerts. Also, the server is logging all the APIs requests/responses and all the module methods requests/responses. But what is missing is an identifier for each API call that can be used to find the associated log entries.</p>
+      <p>A way to tie all the operations (and hence logging) for a request can be achieved using a correlation Id as describe in Rapid7’s blog The Value of Correlation IDs.</p>
+      <p>For the API calls this is achieved using the Correlation-Id header and a server filter. The LoggingFilter class does this by looking for the correlation Id in the Correlation-Id header and, if missing, generating it and setting the header.</p>
+      <p>Next LoggingAspect class finds the correlation Id and puts it in the Mapped Diagnostic Context (MDC)
+"Mapped Diagnostic Contexts shine brightest within client server architectures. Typically, multiple clients will be served by multiple threads on the server. Although the methods in the MDC class are static, the diagnostic context is managed on a per thread basis, allowing each server thread to bear a distinct MDC stamp. MDC operations such as put() and get() affect only the MDC of the current thread, and the children of the current thread."</p>
+      <p>Hence the correlation Id can be logged for all the operations that are used to fulfill the API request (and any errors that may occur).</p>
+      <p>The server code was refactored to use an uber BLException. The salient fields are</p>
+      <pre>public class BLException extends RuntimeException {
+  private UUID correlationId;
+  private String code;
+  private String message;
+  private ErrorDetails details;
+  ...
+}</pre>
+      <p>Some examples of the code field are INVALID DATA and UNAUTHORIZED which are mapped to HTTP status HttpStatus.BAD_REQUEST and HttpStatus.FORBIDDEN.</p>`,
+    createdAt: "December 27, 2021"
+  },
+  {
+    header: "Observability: Chaos",
+    body: `<p>In the previous blog I talked about setting up New Relic synthetics to monitor the application. Now it is time to introduce some chaos into the application which will allow me to check the monitors as the alerts are raised.</p>
+      <p>I used <a href="https://en.wikipedia.org/wiki/Aspect-oriented_programming">Aspect-oriented Programming</a> (AOP) to implement the chaos. In the following class the @Before annotation allows the chaos code to run before all the public methods in the service package of each module. In truth the actual <a href="https://github.com/gpratte/texastoc-v4-integration-testing/blob/master/application/src/main/java/com/texastoc/common/ChaosAspect.java">ChaosAspect</a>  class is more complicated than the one that follows because the New Relic synthetic monitors try three times before raising an incident. Hence the ChaosAspect actually has some code to throw an exception thrice if so configured.</p>
+      <pre>@Aspect
+@Component
+public class ChaosAspect {
+
+  enum ExceptionType {
+    RUNTIME_EXCEPTION,
+    DENIED_EXCEPTION
+  }
+
+  private static final Random RANDOM = new Random();
+  private final IntegrationTestingConfig integrationTestingConfig;
+
+  public ChaosAspect(IntegrationTestingConfig integrationTestingConfig) {
+    this.integrationTestingConfig = integrationTestingConfig;
+  }
+
+  @Before("execution(public * com.texastoc.module.*.service..*(..))")
+  public void chaos(JoinPoint joinPoint) {
+    if (!integrationTestingConfig.isAllowChaos()) {
+      return;
+    }
+    if (RANDOM.nextInt(integrationTestingConfig.getChaosFrequency()) == 0) {
+      // Time to cause some chaos. Randomly choose an exception type.
+      ExceptionType exceptionType = ExceptionType.values()[RANDOM.nextInt(ExceptionType.values().length)];
+      switch (exceptionType) {
+        case RUNTIME_EXCEPTION:
+          throw new RuntimeException("chaos");
+        case DENIED_EXCEPTION:
+          throw new BLException(BLType.DENIED);
+        default:
+          throw new RuntimeException("should never happen");
+      }
+    }
+  }
+}</pre>`,
+    createdAt: "December 27, 2021"
+  },
+  {
+    header: "Observability: Synthetic Monitoring",
+    body: `<p>Since I have done the work to hook up New Relic to monitor my application it is time to flesh out the monitoring using synthetics.</p>
+      <p>"New Relic’s synthetic monitoring simulates user traffic around the world so you can detect and resolve poor performance and outages before your customers notice. Use our suite of automated, scriptable tools to monitor your external and internal websites, critical business transactions, and API endpoints."</p>
+      <p>I configured</p>
+      <ul>
+        <li>a Simple Browser monitor that checks if the web home page loads.</li>
+        <li>a Ping monitor that calls an API that does not require authentication.</li>
+        <li>a Scripted Browser monitor that logs into the application and navigates to the page that shows the current seasons.</li>
+      </ul>
+      <p>I then configure alerts for the synthetic monitors so that New Relic will create an incident when a monitor fails. Viewing an incident is very helpful in determining what went wrong in my application (e.g. what API call failed).</p>
+      <p>At this point the only way I could cause the monitors to fail is to bring down the server. In the next blog I will talk about how I introduced chaos into the application.</p>
+      <p>Here is the synthetic script for the Scripted Browser monitor…</p>
+      <pre>$browser.get("https://test.texastoc.com").then(function(){
+  return $browser.findElement($driver.By.id("emailId")).sendKeys($secure.GUEST_USERNAME);
+}).then(function(){
+  return $browser.findElement($driver.By.id("passwordId")).sendKeys($secure.GUEST_PASSWORD);
+}).then(function(){
+  return $browser.findElement($driver.By.id("loginSubmitId")).click();
+});
+
+$browser.wait(function() {
+  return $browser.getCurrentUrl().then(function(url) {
+    return url.indexOf("home") > 0;
+  });
+}, 1000);
+
+$browser.findElement($driver.By.id("currentSeasonId")).click();
+
+$browser.wait(function() {
+  return $browser.getCurrentUrl().then(function(url) {
+    return url.indexOf("season") > 0;
+  });
+}, 1000);</pre>`,
+    createdAt: "December 27, 2021"
+  },
+  {
+    header: "Observability: New Relic Server Integration",
+    body: `<p>Application Performance Monitoring (APM) is fundamental not only to understanding the health of an application but also provides visibility to application problems. New Relic provides an APM platform (and it’s free for one application).</p>
+      <p>I followed the Install New Relic Java agent for Docker instructions.</p>
+      <p>Downloaded the newrelic-java.zip to the source code in a /third-party directory and unzipped it. When building the docker image copy the third-party/newrelic-java directory. Start the server application with the -javaagent argument.</p>
+      <pre>FROM adoptopenjdk/openjdk11:latest
+EXPOSE 8080
+COPY application/target/texastoc-v4-application-1.0.0.jar /application/
+ADD third-party/newrelic-java /application/
+ENTRYPOINT ["java"]
+CMD [ \\
+    "-javaagent:/application/newrelic/newrelic.jar", \\
+    "-jar", \\
+    "/application/texastoc-v4-application-1.0.0.jar" \\
+]</pre>
+      <p>Bring up the docker container with the New Relic environment variables. Also mount the directories to expose the New Relic logs and the application (i.e. texastoc) logs. Here’s a snippet of the docker-compose file</p>
+      <pre>server:
+  ...
+  environment:
+    NEW_RELIC_LICENSE_KEY: <key>
+    NEW_RELIC_APP_NAME: "test.texastoc.com"
+    ...
+  ports:
+    - 8080:8080
+  volumes:
+    - '/home/administrator/logs/newrelic:/application/newrelic/logs'
+    - '/home/administrator/logs/texastoc:/logs/texastoc'
+  ...</pre>
+      <p>I followed the <a href="https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/linux-installation/install-infrastructure-monitoring-agent-linux/">Quick Start</a> guided install from in Install the infrastructure monitoring agent for Linux.</p>`,
+    createdAt: "October 24, 2021"
+  },
+  {
+    header: "NGINX Fronting the texastoc Application",
+    body: `<p>In the not too distance past</p>
+      <ul>
+        <li>the backend was being deployed to a Tomcat webserver as a war</li>
+        <li>the database was running in a MySQL server</li>
+        <li>the React frontend was also being deployed to Tomcat as a war (oh the shame)</li>
+        <li>Tomcat was configured to set the cache headers for index.html</li>
+        <li>Tomcat was configured for SSL termination</li>
+      </ul>
+      <p>In this post I shine a light on how I used NGINX on the test server (test.texastoc.com) to</p>
+      <ul>
+        <li>serve up the frontend as a file server</li>
+        <li>reverse proxy to the backend</li>
+        <li>set the cache headers on index.html</li>
+        <li>SSL termination</li>
+        <li>redirect HTTP to HTTPS</li>
+      </ul>
+      <p>The rest of this post assumes you have done the following on your linux server</p>
+      <ul>
+        <li>installed docker and docker-compose</li>
+        <li>have the Spring Boot backend and MySQL running in docker (see last blog)</li>
+        <li>installed NGINX</li>
+      </ul>
+      <p>This is the NGINX config file to the texastoc application</p>
+      <pre>worker_processes  1;
+error_log  logs/error.log;
+error_log  logs/error.log  notice;
+error_log  logs/error.log  info;
+events {
+  worker_connections  1024;
+}
+http {
+  include       mime.types;
+  default_type  application/octet-stream;
+  log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+  '$status $body_bytes_sent "$http_referer" '
+  '"$http_user_agent" "$http_x_forwarded_for"';
+  access_log  logs/access.log  main;
+  sendfile        on;
+  keepalive_timeout  65;
+
+# HTTP server
+  server {
+    listen 80;
+    server_name test.texastoc.com www.test.texastoc.com;
+    location /api {
+      default_type application/json;
+      return 403 '{"error": "Cannot access apis via http"}';
+    }
+    location / {
+      return 301 https://test.texastoc.com$request_uri;
+    }
+  }
+# HTTPS server
+  server {
+    listen       443 ssl;
+    server_name  test.texastoc.com www.test.texastoc.com;
+    ssl_certificate      cert.pem;
+    ssl_certificate_key  privkey.pem;
+    ssl_protocols        TLSv1 TLSv1.1 TLSv1.2;
+    ssl_session_cache    shared:SSL:1m;
+    ssl_session_timeout  5m;
+    ssl_ciphers  HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers  on;
+    location /api {
+      proxy_pass http://localhost:8080;
+    }
+    location / {
+      root   /home/administrator/build;
+      index  index.html index.htm;
+      if ( $uri = '/index.html' ) {
+        add_header Cache-Control "no-store, no-cache, must-revalidate, max-age=0";
+      }
+      try_files $uri $uri/ /index.html;
+    }
+  }
+  include servers/*;
+}</pre>
+      <p>Let’s start with the HTTPS server.</p>
+      <p>The domain names accepted are: <b>test.texastoc.com</b> and <b>www.test.texastoc.com</b> as you can see by the following:
+        <br><pre>server_name  test.texastoc.com www.test.texastoc.com;</pre></p>
+      <p>The certificates were generated using <a href="https://letsencrypt.org/">Let’s Ecrypt</a> and configured with the lines beginning with <pre>ssl_</pre></p>
+      <p>The reverse proxy to the backend is configured as follows since all requests to the backend endpoints start with /api</p>
+      <pre>location /api {
+    proxy_pass http://localhost:8080;
+}</pre>
+      <p>The react app can be found <a href="https://github.com/gpratte/texastoc-v4-client">here</a>. It was built for the test server using the follwing command and copied to /home/administrator/build.
+      <br>npm run build:testtexastoc
+      <p>NGINX serves up the React front as follows</p>
+      <pre>location / {
+    root   /home/administrator/build;
+    index  index.html index.htm;
+    if ( $uri = '/index.html' ) {
+      add_header Cache-Control "no-store, no-cache, must-revalidate, max-age=0";
+    }
+    try_files $uri $uri/ /index.html;
+}</pre>
+      <p>The <b>if</b> statement sets the cache headers for index.html. We do not want index.html to be cached so any future deployment will pick up the new javascript files that are
+defined in index.html.</p>
+      <p>The <b>try_files</b> helps avoid 404 Not Found HTTP errors when using react router. Just google "nginx react router" and you will see why.</p>
+      <p>The HTTP server redirects all the requests to HTTPS except the calls to end backend endpoints which start with /api. The backend calls return a 403 HTTP error.</p>`,
+    createdAt: "August 26, 2021"
+  },
+  {
+    header: "Spring Boot Docker Container with MySQL",
+    body: `<p>The last blog showed how to run MySQL in a docker container and initialize the database (root user password, create an application user with a password and create the application database.)</p>
+      <p>The blog before that showed how to run the Spring Boot application in a docker container with an in-memory H2 database.</p>
+      <p>Time to marry the two and run the Spring Boot application in one container and have that access MySQL in another container. Hence this blog will assume you have read (and hopefully played along) with the previous two blogs.</p>
+      <p>This post will assume that you are in a terminal in the /Users/<yourname>/texastoc-v4-integration-testing-master directory. Of course substitute the correct value for <yourname>. If running on Windows adjust the path accordingly.</p>
+      <p>Much of what follows can be found in the README for the texastoc application.</p>
+      <p>At the root of the project you will see a docker-compose-server-mysql.yml file. To use this docker compose file you need to ...</p>
+      <p>1. Build the texastoc application so that is will use the MySQL database.
+            <br>mvn -P mysql -pl application clean package</p>
+      <p>2. Build the docker image
+            <br>docker build -t texastoc-v4-mysql-image .</p>
+      <p>Before starting the docker containers there are a few things to point out. Have a look at the environment variables that are set in the docker-compose-server-mysql.yml file</p>
+      <pre>"db": {
+  "h2": false,
+  "mysql": true,
+  "schema": true,
+  "seed": true,
+  "populate": true
+}</pre>
+      <p>The runtime of texastoc application looks for these variables and acts accordingly. These are the environment variable we want the first time we bring up the application server because the schema, seed and populate variable will add a season, game and players to the database. The schema, seed and populate environment variable should be removed when bringing up the docker containers in the future.</p>
+      <p>The MySQL database connection environment variables are</p>
+      <pre>"mysql": {
+  "url": "jdbc:mysql://db:3306/toc?allowPublicKeyRetrieval=true&useSSL=false",
+  "password": "tocuserpw"
+}</pre>
+      <p>First I must say that it’s bad form to put passwords in configuration files. I’ll be moving these to some external "vault" like product.</p>
+      <p>Next the "db" in "jdbc:mysql://<b>db</b>:3306/toc…" is an docker internal hostname to the MySQL container</p>
+      <pre>services:
+  db:
+    ...
+</pre>
+      <p>Lastly the application container depends on the MySQL container. Hence MySQL will be up before starting the application server.</p>
+      <pre>server:
+  container_name: server
+  ...
+  depends_on:
+    - db</pre>
+      <p>3. Start the docker container
+        <br>docker-compose -f docker-compose-server-mysql.yml up -d</p>
+      <p>4. View the log of the texastoc application
+         <br>docker logs -f server</p>
+      <p>5. Stop tailing the docker logs by holding the control key and then pressing control c
+        <br>&lt;cntrl&gt;c</p>
+      <p>6. Test by hitting one of the APIs.
+        <br>curl http://localhost:8080/api/v4/settings</p>
+      <p>7. Stop the docker container
+        <br>docker-compose -f docker-compose-server-h2.yml down</p>`,
+    createdAt: "August 24, 2021"
+  },
+  {
+    header: "MySQL Docker Container",
+    body: `<p>The texastoc Spring Boot server uses a MySQL database in the production deployment. Let’s see how to set it up with an admin user, an application user and the application database.</p>
+      <p>The vanilla MySQL docker container will write to its ephemeral filesystem which means when the container goes away so do the database files. Hence it is very important to mount the filesystem of the system running the docker container to store the database files. We’ll also have to set the root password and create the database for the texastoc application.</p>
+      <p>Some of the steps from the last blog will be repeated in case you are reading this without reading that.</p>
+      <p>Get the <a href="https://github.com/gpratte/texastoc-v4-integration-testing">https://github.com/gpratte/texastoc-v4-integration-testing</a>  Spring Boot application. Download the zip and unzip it. For the remainder of this article let’s assume you have the unzipped code in /Users/<yourname>/texastoc-v4-integration-testing-master directory and you are in a terminal in that directory. Of course substitute the correct value for <yourname>. If running on Windows adjust the path accordingly.</p>
+      <p>In the root of the /Users/<yourname>/texastoc-v4-integration-testing-master directory you will see a docker-compose-mysql.yml file. Notice the
+        <br><pre>volumes:
+- './data:/var/lib/mysql'</pre>
+        <br>When the MySQL docker container starts up it will mount ./data directory of the local filesystem. The database files that MySQL writes to /var/lib/mysql will, in actuality, be written to the ./data directory instead.
+      </p>
+      <p>In the terminal create a directory for the MySQL database files.
+        <br>mkdir data</p>
+      <p>When docker starts it looks to see if there is ANYTHING in the local volume
+(./data). Only if the directory is empty, which it is at the moment, will it initialize the database files and set the root password to ‘secret’ (which we configured in docker-compose-mysql.yml). Subsequent instantiations of the MySQL docker container will see the database files and use them.</p>
+      <p>Let’s run the docker-compose-mysql.yml file so that MySQL initializes the database.
+        <br>docker-compose -f docker-compose-mysql.yml up -d</p>
+      <p>View the log of the MySQL server
+        <br>docker logs db</p>
+      <p>The following assumes you have a MySQL client installed.</p>
+      <pre>mysql -h 127.0.0.1 -P 3306 -u root -p
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'rootpass';
+CREATE USER 'tocuser'@'%' IDENTIFIED BY 'tocpass';
+GRANT ALL PRIVILEGES ON * . * TO 'tocuser'@'%';
+FLUSH PRIVILEGES;
+quit;
+mysql -h 127.0.0.1 -P 3306 -u tocuser -p
+create database toc;
+quit;</pre>
+      <p>Stop the container
+        <br>docker-compose -f docker-compose-mysql.yml down</p>`,
+    createdAt: "August 24, 2021"
+  },
+  {
+    header: "Spring Boot Docker Container (H2 in-memory database)",
+    body: `<p>Go back to before April 2014 when Spring Boot was released. The way a Spring application was deployed was to build a WAR file and deploy that to a web server (e.g. Tomcat). That was how the texastoc backend was being deployed.</p>
+      <p>It is time to move the texastoc Spring Boot application to a docker container. You can play along or just read the following instructions.</p>
+      <p>The journey begins by installing Docker for Desktop (my development system is a mac book pro).</p>
+      <p>Get the <a href="https://github.com/gpratte/texastoc-v4-integration-testing">https://github.com/gpratte/texastoc-v4-integration-testing</a>  Spring Boot application. Download the zip and unzip it. For the remainder of this article let’s assume you have the unzipped code in /Users/<yourname>/texastoc-v4-integration-testing-master directory and you are in a terminal in that directory. Of course substitute the correct value for <yourname>. If running on Windows adjust the path accordingly.</p>
+      <p>Much of what follows can be found in the README for the texastoc application.</p>
+      <p>The texastoc application has been developed so that it can use an in-memory H2 database. At the root of the project you will see a docker-compose-server-h2.yml file. To use this docker compose file you need to</p>
+      <p>1. Build the texastoc application so that is will use the H2 database.
+        <br>mvn -P h2 -pl application clean package</p>
+      <p>2. Build the docker image from the Dockerfile that can be found in the root of the project. The Dockerfile is configured to use AdoptOpenJDK 11, exposes port 8080 and runs Spring Boot as a jar file.
+        <br>docker build -t texastoc-v4-h2-image .</p>
+      <p>3. Start the docker container
+        <br>docker-compose -f docker-compose-server-h2.yml up -d</p>
+      <p>Take note of the environment variables that are set in the docker-compose-server-h2.yml file</p>
+      <pre>"h2": true,
+"mysql": false,
+"schema": true,
+"seed": true,
+"populate": true</pre>
+      <p>The runtime of texastoc application looks for these variables and acts accordingly. In this case the runtime will use the H2 database connection, create the database schema, seed the database and run the population code that will create a season, players and games.</p>
+      <p>4. View the log of the texastoc application
+        <br>docker logs -f server</p>
+      <p>5. Stop tailing the docker logs by holding the control key and then pressing control c
+        <br>&lt;cntrl&gt;c</p>
+      <p>6. Test by hitting one of the APIs.
+        <br>curl http://localhost:8080/api/v4/settings</p>
+      <p>7. Stop the docker container
+        <br>docker-compose -f docker-compose-server-h2.yml down</p>`,
+    createdAt: "August 22, 2021"
+  },
+  {
+    header: "Version 4: Refactor Cucumber Integration Tests to JUnit",
+    body: `<p>The integration tests are tests that exercise the server endpoints. The last version (v3) has these tests written as cucumber tests. The gherkin language for defining scenarios is very nice in that different stakeholder can understand and contribute to the tests.</p>
+      <p>Here is an example of one of the scenarios for a player test</p>
+      <pre>Scenario: Get players
+  Given a new player
+  Given another new player
+  When the players are retrieved
+  Then the players match</pre>
+      <p>The problem I was having time and again was getting the cucumber tests to run individually. Time and time again I found myself digging through documentation to see why it stopped working.</p>
+      <p>For version 4 of the texastoc server I am refactoring the cucumber tests to JUnit. Here is what the scenario above looks like as a JUnit test.</p>
+      <pre>// Scenario Get players
+@Test
+public void createMultipleAndGet() throws Exception {
+  // Given
+  newPlayer();
+  // Given
+  anotherNewPlayer();
+  // When
+  getPlayers();
+  // Then
+  thePlayersMatch();
+}</pre>
+      <p>With comments it is close enough to the gherkin scenario that other stakeholder can understand it.</p>`,
+    createdAt: "May 23, 2021"
+  },
+  {
     header: "Version 3 is Live So What’s Next",
     body: `<p>The modular monolith for texastoc.com version 3 is live! See <a href="https://texastoc.herokuapp.com/">https://texastoc.herokuapp.com/</a>. Note that, since it is deployed to Heroku, it may take a minute for Heroku to provision the frontend server you first hit the website. So the frontend web page can take a minute to load. Then when you log in the backend can take another minute. When the backend comes up it seeds a season and games which can also take a minute.</p>
       <p>Although the code base is a modular monolith it still suffers from having all the modules in a single code base. That means if, after a deployment, one module has to roll back all the modules will roll back.</p>
@@ -730,7 +1123,7 @@ static {
   {
     header: "CircleCI for Continuous Integration",
     body: `<p>Using the free plan for CircleCI to build and run tests. Chose the CircleCI free plan and use my github credentials to log into CircleCI. Chose the texastoc-v2-spring-boot github repo for CircleCI to use. CircleCI added a key to this repo.</p>
-      <p>Followed the CircleCI directions to</p>
+      <p>I followed the CircleCI directions to</p>
       <ul>
         <li>add a .circleci directory to my project</li>
         <li>add a config.yml in the .circleci directory for a Java maven project</li>
