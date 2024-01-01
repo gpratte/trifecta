@@ -21,3 +21,7 @@ table, th, td {
     border-collapse: collapse;
     padding: 5px;
 }
+.blog-nav {
+    font-size: 1.5em;
+    margin-top: 25px;
+}
