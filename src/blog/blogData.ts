@@ -6,6 +6,66 @@ export type BlogData = {
 
 export const blogEntries: Array<BlogData> = [
   {
+    header: "Basic Authentication",
+    body: `<p>Starting to implement login/authentication in the Texas TOC application.</p>
+     <p>Use the Spring Security and Angular guide as a reference to implement basic authentication.</p>
+     <p>Did not implement the reference application from the guide but instead applied the lessons to the existing Texas TOC angular front end (<a href="https://github.com/gpratte/texastoc-v2-angular">https://github.com/gpratte/texastoc-v2-angular</a>) and Texas TOC Java/Spring back end (<a href="https://github.com/gpratte/texastoc-v2-spring-boot">https://github.com/gpratte/texastoc-v2-spring-boot</a>).</p>
+     <p>The Spring Security and Angular guide begins to show authentication using basic authentication at <a href="https://spring.io/guides/tutorials/spring-security-and-angular-js/#_the_login_page_angular_js_and_spring_security_part_ii">The Login Page</a></p>
+     
+     <h3>Angular Front End</h3>
+     <p>Implemented the changes on the branch labelled <a href="https://github.com/gpratte/texastoc-v2-angular/tree/15-security-basic-auth">15-security-basic-auth</a></p>
+     <table>
+       <tr>
+         <th>Module</th>
+         <th>Function</th>
+       </tr>
+       <tr>
+         <td>app.services.ts</td>
+         <td>authenticate() – set basic auth header if credential have been entered in login page</td>
+       </tr>
+       <tr>
+         <td>app.component.ts</td>
+         <td>logout()</td>
+       </tr>
+       <tr>
+         <td>login.component.ts</td>
+         <td>login()</td>
+       </tr>
+       <tr>
+         <td>xxx.component.ts</td>
+         <td>ngInit() – route to login if not authenticated
+Java/Spring Back End</td>
+       </tr>
+     </table>
+     <br>
+     <h3>Java/Spring Back End</h3>
+     <p>Implemented the changes on the branch labelled <a href="https://github.com/gpratte/texastoc-v2-spring-boot/tree/01-security-basic-auth">01-security-basic-auth</a></p>
+     <table class="table">
+       <tr>
+         <th>Module</th>
+         <th>Function</th>
+       </tr>
+       <tr>
+         <td>TexastocApplication.java</td>
+         <td>Added the security configuration to require basic authentication and allow CORS</td>
+       </tr>
+       <tr>
+         <td>UserController.java</td>
+         <td>\t/user endpoint to return the principal</td>
+       </tr>
+     </table>`,
+    createdAt: "October 6, 2018"
+  },
+  {
+    header: "Back after a lull",
+    body: `<p>It has been a few months since my last blog. The reason for the lull is that I started a new job (Java/Spring Boot/Pivotal Cloud Foundry). As always starting a new job takes a lot out of a software developer – learning new tools, architecture, ... .</p>
+     <p>I’ve come up to speed using gradle as a Java build tool. I’m also learning Pivotal Cloud Foundry (PCF) for the first time.</p>
+     <p>Recently I’ve found time to get back to working on version 2 of the Texastoc application. I am currently working through the Spring Security and Angular tutorial in the Spring Guides.</p>
+     <p>See Spring Security and Angular at <a href="https://spring.io/guides/tutorials/spring-security-and-angular-js/">https://spring.io/guides/tutorials/spring-security-and-angular-js/</a></p>
+     <p>I’m not going through it from scratch but instead applying it to my Angular 6 and Spring Boot application. I’ll go into the gory details when I have it working in my next blog.</p>`,
+    createdAt: "September 30, 2018"
+  },
+  {
     header: "Architecture – C4 model",
     body: `<p>Time for some architecture diagrams. There were two front runners that I wanted to explore for documenting the architecture</p>
       <ul>
