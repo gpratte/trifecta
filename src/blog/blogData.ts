@@ -6,6 +6,22 @@ export type BlogData = {
 
 export const blogEntries: Array<BlogData> = [
   {
+    header: "Architecture – C4 model",
+    body: `<p>Time for some architecture diagrams. There were two front runners that I wanted to explore for documenting the architecture</p>
+      <ul>
+        <li>C4 model (see <a href="https://c4model.com/">https://c4model.com/</a>)</li>
+        <li>Arc42 (see <a href="https://arc42.org/">https://arc42.org/</a>)</li>
+      </ul>
+      <p>After a quick read of the two I chose the C4 model because it felt familiar to me. Systems, containers, components and code is the way I think about software.</p>
+      <p>I chose to use <a href="https://www.draw.io/">https://www.draw.io/</a> with the C4 plugin. See the C4 model tooling section at <a href="https://c4model.com/#tooling">https://c4model.com/#tooling</a></p>
+      <p>Here are the core diagrams (see <a href="https://c4model.com/#coreDiagrams">https://c4model.com/#coreDiagrams</a>) for the TexasToc application.</p>
+      <p><img src="/img/c4-1.webp" alt="C4 model System Context"/></p>
+      <p><img src="/img/c4-2.webp" alt="C4 model System Containers"/></p>
+      <p><img src="/img/c4-3.webp" alt="C4 model Angular Components"/></p>
+      <p><img src="/img/c4-4.webp" alt="C4 model API Server Components"/></p>`,
+    createdAt: "June 17, 2018"
+  },
+  {
     header: "Angular front end (with mock data)",
     body: `<p>I’ve coded the Angular front end equivalent from the wireframe mockups that were done in bootstrap.</p>
        <p>The Angular pages use mock data that is hardcoded in the corresponding components. For example the current-game.compoent.ts has the mock data for the current-game.component.html.</p>
