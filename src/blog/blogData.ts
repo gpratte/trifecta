@@ -6,6 +6,121 @@ export type BlogData = {
 
 export const blogEntries: Array<BlogData> = [
   {
+    header: "React/Redux client calling Spring Boot server",
+    body: `<p>It’s been a long time coming but it happened today – the client made a call to the server.</p>
+      <p>Woo hoo!!!</p>
+      <p>I wrote version 1 of the poker league application back in 2014. Back end is Spring MVC 3.X and front end is JQuery mobile.</p>
+      <p>I started working on version 2 in 2018. My first blog post was April 28, 2018 (see the first blog posting in this blog).</p>
+      <p>As far as the client calling the server see the readme for branch 06 in the <a href="https://github.com/gpratte/texastoc-v2-react-redux/tree/step-06-login-api">https://github.com/gpratte/texastoc-v2-react-redux/tree/step-06-login-api</a> repository. Making an AJAX call using the Axiom library.</p>`,
+    createdAt: "February 17, 2020"
+  },
+  {
+    header: "Travis CI",
+    body: `<p>In an earlier post I wrote about using CircleCI for continuous integration and deployment to Heroku. It was been months since it has run and when it did today it could not pull from GitHub. After more than an hour reading both CircleCI document and other results from my google search I still could not figure out what I needed to do to fix the problem. I must say I am not impressed with CircleCI’s documentation.</p>
+     <p>So I switch to using Travis CI. I had it working in minutes (just to pull and run the tests, not to deploy). Here’s my .travis.yml</p>
+     <pre>  language: java
+  jdk: openjdk8
+  sudo: false
+  script: mvn clean install
+  cache:
+    directories:
+      - $HOME/.m2
+
+  install:
+    - mvn -N io.takari:maven:wrapper
+    - ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V</pre>`,
+    createdAt: "February 16, 2020"
+  },
+  {
+    header: "React Router",
+    body: `<p>In previous blogs I built up the poker-league-current-game react/redux application. The main react component is the CurrentGame.</p>
+      <p>I also built a poker-league-season react/redux application (I did not blog about this). The main react component is the Season.</p>
+      <p>The poker league application will have a navigation header and a main page. The main page will "swap" these components. I implemented this in the texastoc-v2-react-redux application using react routing.</p>
+      <p>A snippet of code for the navigation bar and main section</p>
+      <pre>  &lt;Navbar>
+  ...
+  &lt;/Navbar&gt;
+  &lt;Switch&gt;
+  &lt;Route exact={true} path="/" component={Home}/&gt;
+  &lt;Route path="/season" component={Season}/&gt;
+  &lt;Route path="/current-game" component={CurrentGame}/&gt;
+  &lt;/Switch&gt;</pre>
+      <p>See the readme in the github repository for more details.</p>`,
+    createdAt: "February 16, 2020"
+  },
+  {
+    header: "Using React State Instead of Redux",
+    body: `<p></p>
+      <p>I thought making a copy of the seating in the redux store for the UI (see previous blog post) is a bit clunky. I talked to one of the expert react/redux developers at work and he said that using react state instead of the redux store is another possibility (along with a disclaimer that he has not looked at the code yet to know for sure what I am trying to achieve).</p>
+      <p>I changed the SeatingConfig react component to create the seating state from the game.seating values in the constructor. Then the SeatingConfig and its two subcomponents, SeatingSeatsPerTable and SeatingPlayerAtTable, use the react state to save the fields that are set in the UI.</p>
+      <p>When the SeatingConfig modal dialog is submitted the react state is used to get the values and then packaged to call the redux store to upsert the seating.</p>
+      <p>I had to force the SeatingConfig modal dialog component to remount when it is shown so that the constructor can set the state. Did this by adding a key which changes when it is time for the modal dialog to appear.</p>
+      <pre><SeatingConfig key={game.showConfigureSeatingKey} game={game}/></pre>
+      <p>See branch step-13-react-state-instead-of-redux in the <a href="https://github.com/gpratte/poker-league-current-game">https://github.com/gpratte/poker-league-current-game</a> repository. As always compare the branch to the previous branch if you want to see the changes.</p>`,
+    createdAt: "January 5, 2020"
+  },
+  {
+    header: "Using Redux/React for Dynamically Showing UI Components",
+    body: `<p>Coded up the poker UI for seating players. This has a lot of dynamically showing/hiding UI React components by using Redux Actions/Reducer/Store.</p>
+      <p>The following quote is from step 12 seating section of the readme for <a href="https://github.com/gpratte/poker-league-current-game">https://github.com/gpratte/poker-league-current-game</a></p>
+      <p>"The tricky thing was to make a copy of the seating for the UI to use. The UI changes the copy in the store. That way if the modal dialog is cancelled it does not affect the "real" seating values in the store."</p>
+      <p>See branches step-12-seating in the <a href="https://github.com/gpratte/poker-league-current-game">https://github.com/gpratte/poker-league-current-game</a> repository. As always compare the branch to the previous branch if you want to see the changes.</p>`,
+    createdAt: "December 29, 2019"
+  },
+  {
+    header: "More React Bootstrap Modal",
+    body: `<p>Since the last post I coded up the ability to update a player and add a new player (one that has never played in the poker league before). Updating and adding a new player are each done in their own react bootstrap modal dialog.</p>
+      <p>See branches step-09-edit-player and step-10-add-new-player in the <a href="https://github.com/gpratte/poker-league-current-game">https://github.com/gpratte/poker-league-current-game</a> repository. As always compare the branch to the previous branch if you want to see the changes.</p>`,
+    createdAt: "December 25, 2019"
+  },
+  {
+    header: "React Bootstrap Modal",
+    body: `<p>I am using a react bootstrap modal for a dialog to add an existing league player to a game. See <a href="https://react-bootstrap.github.io/components/modal/">https://react-bootstrap.github.io/components/modal/</a></p>
+      <p>The modal dialog was a part of the react component that shows a list of the players in the game. At the bottom of the list there is a button to add a player which bring up the modal dialog. As per the bootstrap documentation I put the modal state to show/hide in the react component.</p>
+      <p>I wanted to move the modal dialog into its own react component. This means the button to add a player is in one component and the modal itself is in another component. How to handle the show/hide state? Redux of course!</p>
+      <p>To get this to work the following changes were made</p>
+      <ul>
+        <li>the redux store now has a showAddExistingPlayer boolean.</li>
+        <li>a new TOGGLE_ADD_EXISTING_PLAYER_TO_GAME action</li>
+        <li>the reducer changes the value of the showAddExistingPlayer in the store when it gets an TOGGLE_ADD_EXISTING_PLAYER_TO_GAME action</li>
+        <li>when the add player button is clicked it dispatches the TOGGLE_ADD_EXISTING_PLAYER_TO_GAME action</li>
+        <li>a new AddExistingPlayer component which is a modal dialog. It shows/hides whenever the showAddExistingPlayer store is changed by the reducer.</li>
+      </ul>
+      <p>See branch step-08-add-player-modal-component in the <a href="https://github.com/gpratte/poker-league-current-game">https://github.com/gpratte/poker-league-current-game</a> repository. Compare it to the previous step 07 branch if you want to see the changes.</p>`,
+    createdAt: "December 23, 2019"
+  },
+  {
+    header: "Redux",
+    body: `<p>I have a lot of React components so it is time to add Redux to the mix. In an earlier post, Learn Redux, I worked through the redux.js.org tutorial. Adding redux to my poker league application front end was the goal.</p>
+      <p>Wiring up redux in this application was difficult for two reasons</p>
+      <ol>
+        <li>learning redux for the first time</li>
+        <li>I have a lot of react components</li>
+      </ol>
+      <p>I simplified the scope of wiring up redux by concentrating on being able to add an existing league player to the current game. But this was still too much to do in this application (e.g. getting the player information from a react bootstrap modal dialog). So to simplify things even more I created a very small repository where I got things working. See <a href="https://github.com/gpratte/redux-toy-poker-game">https://github.com/gpratte/redux-toy-poker-game</a></p>
+      <p>There were two aha moments. The first was figuring out that the redux connector is used early in the application plumbing. The second was putting the store in its own file.</p>
+      <p>See the code by looking at the step 07 redux branch of my poker league application at <a href="https://github.com/gpratte/poker-league-current-game">https://github.com/gpratte/poker-league-current-game</a></p>`,
+    createdAt: "December 22, 2019"
+  },
+  {
+    header: "React Bootstrap",
+    body: `<p>Added React Bootstrap to the poker league game I’ve been working on (see previous post).</p>
+      <p>It’s nice to add Bootstrap to the app for two reasons:</p>
+      <ol>
+        <li>It looks nice. Nice buttons, tables, rows and columns, ...</li>
+        <li>Functionality – accordions, modal dialogs, ...</li>
+      </ol>
+      <p>Check out the modal dialogs for adding and updating players, nice 🙂</p>`,
+    createdAt: "November 27, 2019"
+  },
+  {
+    header: "React/Redux Poker League Game",
+    body: `<p>Beginning coding React/Redux in earnest. For my poker league game I am going to rewrite the entire front end using React and Redux.</p>
+      <p>I am beginning with the heart of the front end – the game in progress.</p>
+      <p>See the readme for this application in my github at <a href="https://github.com/gpratte/poker-league-current-game">https://github.com/gpratte/poker-league-current-game</a></p>`,
+    createdAt: "November 17, 2019"
+  },
+  {
     header: "Learn Redux",
     body: `<p>I worked through the <a href="https://redux.js.org/basics/basic-tutorial">basic redux tutorial</a>. I learned about</p>
       <ul>
@@ -255,7 +370,7 @@ export const blogEntries: Array<BlogData> = [
       <p>Step 1. Both require a failing test to be written first in the form Arrange, Act and Assert (for BDD these verbs are Given, When and Then).</p>
       <p>Step 2. Both require that as little code as possible be written to pass the test.</p>
       <p>Step 3. Refactor the code if needed. The code that was written in step 2 may not be production worthy so make it so.</p>
-      <p>I wrote a poker hand comparator. I got as far as comparing two “high card wins” hands (i.e. no pairs, straights, ...).</p>
+      <p>I wrote a poker hand comparator. I got as far as comparing two "ahigh card wins" hands (i.e. no pairs, straights, ...).</p>
       <p>The testing and coding is all explained in the github readme at the <a href="https://github.com/gpratte/tdd-bdd-experiment">https://github.com/gpratte/tdd-bdd-experiment</a> github repository.</p>`,
     createdAt: "November 14, 2018"
   },
@@ -287,8 +402,7 @@ export const blogEntries: Array<BlogData> = [
        </tr>
        <tr>
          <td>xxx.component.ts</td>
-         <td>ngInit() – route to login if not authenticated
-Java/Spring Back End</td>
+         <td>ngInit() – route to login if not authenticated Java/Spring Back End</td>
        </tr>
      </table>
      <br>
@@ -444,7 +558,7 @@ Java/Spring Back End</td>
       </ul>
       <p>Added a new stub to return a json body
       <ul>
-      <li>curl -X POST http://localhost:9999/__admin/mappings -d &apos;{ "request”: { "method”: "GET”, "url”: "/hello2” }, "response”: { "jsonBody”: {"Hello”: "world!” }}}&apos;
+      <li>curl -X POST http://localhost:9999/__admin/mappings -d &apos;{ "request": { "method": "GET", "url": "/hello2" }, "response": { "jsonBody": {"Hello": "world!" }}}&apos;
       </ul>
       <p>Exercise the stub",
       <ul>
