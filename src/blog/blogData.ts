@@ -6,6 +6,244 @@ export type BlogData = {
 
 export const blogEntries: Array<BlogData> = [
   {
+    header: "Velocity Template for Game Summary Email Body",
+    body: `<p>Before this blog I had some ugly code that would create the html for the game summary email body. Here’s a snippet ...</p>
+      <pre>sb.append("&lt;td colspan=\\"2\\"&gt;Season games " + game.getSeasonGameNum() + "&lt;/td&gt;");</pre>
+      <p>I moved to using velocity templates. See <a href="https://velocity.apache.org/">https://velocity.apache.org/</a>. Here’s a snippet ...</p>
+      <pre>&lt;tr&gt;
+  &lt;td&gt;Season game&lt;/td&gt;
+  &lt;td&gt;$game.seasonGameNum&lt;/td&gt;
+&lt;/tr&gt;</pre>
+      <p>In my Spring Boot project I added this dependency ...</p>
+      <pre><dependency>
+  <groupId>org.apache.velocity</groupId>
+  <artifactId>velocity</artifactId>
+  <version>1.7</version>
+</dependency></pre>
+      <p>Note that I did NOT add the velocity-tools dependency which you may see in other write-ups.</p>
+      <p>I configured the velocity engine in my code ...</p>
+      <pre>private static final VelocityEngine VELOCITY_ENGINE = new VelocityEngine();
+static {
+  VELOCITY_ENGINE.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+  VELOCITY_ENGINE.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+  VELOCITY_ENGINE.init();
+}</pre>
+      <p>I added a game-summary.vm velocity template in the src/main/resources directory. I was able to load the template, add Java objects to the context and run the template engine to get my resulting html file like so ...</p>
+      <pre>private String getGameSummaryFromTemplate(Game game) {
+  Template t = VELOCITY_ENGINE.getTemplate("game-summary.vm");
+  VelocityContext context = new VelocityContext();
+  context.put("game", game);
+  ...
+  StringWriter writer = new StringWriter();
+  t.merge(context, writer);
+  return writer.toString();
+}</pre>
+      <p>You can see the code at <a href="https://github.com/gpratte/texastoc-v2-spring-boot/tree/81-better-template-context">https://github.com/gpratte/texastoc-v2-spring-boot/tree/81-better-template-context</a></p>`,
+    createdAt: "November 27, 2020"
+  },
+  {
+    header: "CICD",
+    body: `<p>Earlier I blogged about using Travis for Continuous Integration (CI). See <a href="https://fullstacksoftwareblog.wordpress.com/2020/02/16/travis-ci/">https://fullstacksoftwareblog.wordpress.com/2020/02/16/travis-ci/</a></p>
+      <p>But CI is only only half the story for Continuous Integration and Continuous Deployment (CICD). Time to deploy the back end server and front end servers to <a href="https://www.heroku.com/">Heroku</a>.</p>
+      <p>For both the back end and front end I changed the pom.xml <b>default</b> profile to build a war that can be run stand alone when deployed to Heroku. For the back end that means it uses the embedded H2 database with seed data. For the front end that means the url for the UI and for the server point to the Heroku deployments</p>
+      <ul>
+        <li>Front end: <a href="https://texastoc.herokuapp.com">https://texastoc.herokuapp.com</a></li>
+        <li>Back end: <a href="https://texastoc-server.herokuapp.com">https://texastoc-server.herokuapp.com</a></li>
+      </ul>
+      <p>I also update both pom.xml files to use the Heroku war plugin that runs with the webapp-runner which is a jar that has a tomcat server that a war can be deployed to. See <a href="https://devcenter.heroku.com/articles/java-webapp-runner">https://devcenter.heroku.com/articles/java-webapp-runner</a></p>
+      <p>I updated the travis yaml config file (.travis.yml) to deploy to heroku. See <a href="https://docs.travis-ci.com/user/deployment/heroku/">https://docs.travis-ci.com/user/deployment/heroku/</a>. Here’s the UI configuration</p>
+      <pre>deploy:
+  provider: heroku
+  api_key:
+    secure: <encrypted key>
+  app:
+    master: texastoc
+  skip_cleanup: true
+  run:
+    - restart</pre>
+      <p>Now when code is push to master (either directly or from a pull request) the war will be built and deploy to Heroku (assuming no failed tests).</p>
+`,
+    createdAt: "June 21, 2020"
+  },
+  {
+    header: "WebSocket",
+    body: `<p>While developing V2.0 I attempted to wire up WebSockets to push the clock values from the server to the client. I got an older version of a JavaScript library to receive the clock data from the server. I was unable to get a more modern WebSockets connection (all browsers now support WebSockets and they all have a WebSocket object) to work.</p>
+      <p>Because I had a deadline of May 1st for the new version to go live I abandoned the WebSocket and implements polling for the clock changes (and polling for the changes).</p>
+      <p>Now that the code is live I resurrected the client WebSocket work. The library in my package.json is "stompjs": "^2.3.3"</p>
+      <p>Coding the client to connect to the WebSocket and receive data is fairly straight forward. But I had to add code to check the health of the WebSocket and to attempt to reconnect if not healthy. The health check is on a 10 second timer. If the WebSocket is not healthy the client makes an API call to get the clock data as well as trying to reestablish the WebSocket connection.</p>
+      <p>You can find the client code for the WebSocket for the clock at <a href="https://github.com/gpratte/texastoc-v2-react-redux/blob/master/src/current-game/components/ClockWebSocket.jsx">https://github.com/gpratte/texastoc-v2-react-redux/blob/master/src/current-game/components/ClockWebSocket.jsx</a></p>
+      <p>The Spring support in the server was super easy – include a dependency, and annotation and a send the clock data using a SimpMessagingTemplate. The server code to configure the WebSocket can be found at <a href="https://github.com/gpratte/texastoc-v2-spring-boot/blob/master/application/src/main/java/com/texastoc/config/WebSocketConfig.java">https://github.com/gpratte/texastoc-v2-spring-boot/blob/master/application/src/main/java/com/texastoc/config/WebSocketConfig.java</a></p>
+      <p>The server code to send the data on the WebSocket can found at <a href="https://github.com/gpratte/texastoc-v2-spring-boot/blob/master/application/src/main/java/com/texastoc/connector/WebSocketConnector.java">https://github.com/gpratte/texastoc-v2-spring-boot/blob/master/application/src/main/java/com/texastoc/connector/WebSocketConnector.java</a></p>`,
+    createdAt: "May 30, 2020"
+  },
+  {
+    header: "Lesson Learned About Caching the UI",
+    body: `<p>Here is the biggest lesson learned regarding a deploying a Single Page Application (<a href="https://en.wikipedia.org/wiki/Single-page_application">https://en.wikipedia.org/wiki/Single-page_application</a>) – make sure index.html is not cached!!!</p>
+      <p>When I first deployed my React application I did not set the caching for index.html to none/zero/nada. Subsequent deployments of my application are ignored by the browser because it has already cached index.html and hence no need to get it again.</p>
+      <p>This means the client has to either 1. force the browser to get the lastest (control R on Windows/Linux or Command R on Mac) or 2. clear the browser cache.</p>
+      <p>About a week after going live I configured my Tomcat server so that index.html will not be cached. Unfortunately I don’t know how long until original index.html cache will time out.</p>
+      <p>BIG lesson learned.</p>`,
+    createdAt: "May 25, 2020"
+  },
+  {
+    header: "Version 2.0 What’s Next",
+    body: `<p>What’s next for texastoc version 2.0?</p>
+      <p>As I mentioned in a previous blog today, 2.0 is a Minimal Viable Product (MVP). There are a lot of features to implement to get it up to parity with 1.0.</p>
+      <ul>
+        <li>show previous season results</li>
+        <li>show the point system</li>
+        <li>show how the payouts are calculated</li>
+        <li>show the rounds</li>
+        <li>add the ability to email certain group of players (board members, cash game players, this season’s tournament players, ...)</li>
+        <li>Top ten lists</li>
+        <li>FAQ</li>
+      </ul>`,
+    createdAt: "May 1, 2020"
+  },
+  {
+    header: "Version 2.0 Live continued",
+    body: `<p>Version 2.0 of the texastoc web site went live today – continued!</p>
+      <p>And what a trip it has been to get to this point.</p>
+      <p>The back end consisted of 59 branches. Here is a smattering</p>
+      <ul>
+        <li>02-create-season</li>
+        <li>07-tdd-create-game</li>
+        <li>16-payout-calculator</li>
+        <li>18-add-player-to-game</li>
+        <li>23-first-time-player</li>
+        <li>29-seating</li>
+        <li>36-continuous-integration</li>
+        <li>37-jwt-auth</li>
+        <li>41-update-model-for-frontend</li>
+        <li>53-sms-notifications</li>
+        <li>59-final-shake-down</li>
+      </ul>
+      <p>For the front end I learned how to code in React and Redux. The front end consisted of 30 branches. Here is a smattering</p>
+      <ul>
+        <li>step-01-create-development-environment</li>
+        <li>step-02-bootstrap</li>
+        <li>step-04-routing</li>
+        <li>step-07-league-store</li>
+        <li>step-08-react-router-bootstrap</li>
+        <li>step-11-create-new-season</li>
+        <li>step-12-create-new-game</li>
+        <li>step-17-add-first-time-player</li>
+        <li>step-22-seating</li>
+        <li>step-27-forgot-password</li>
+        <li>step-29-production-build</li>
+        <li>step-30-final-shake-down</li>
+      </ul>
+      <p>And don’t forget devops because it is no good if it is not deployed. There are a lot of options for deployment (virtual machine, Heroku, Amazon Web Services, ...). The main devops requirement is to do whatever is the least expensive (which puts a bigger burden on me). I went the path of a virtual machine and free SSL certificate. I already have the domain name.</p>
+      <p>Devops steps (believe me there is a lot of work for each step)</p>
+      <ul>
+        <li>Provision a virtual machine</li>
+        <li>Install MySQL, create schema and seed data</li>
+        <li>Install Java</li>
+        <li>Install and configure apache tomcat</li>
+        <li>Sign up for SMS with Twilio</li>
+        <li>Sign up for sending emails with Postmarkapp</li>
+        <li>Create a back end war file to deploy to a web server</li>
+        <li>Create a front end war file to deploy to a web server</li>
+        <li>Provision an SSL certificate using LetsEncrypt and config tomcat to use it</li>
+        <li>Change the domain DNS to point to the new server</li>
+      </ul>`,
+    createdAt: "May 1, 2020"
+  },
+  {
+    header: "Version 2.0 Live",
+    body: `<p>Version 2.0 of the texastoc web site went live today! Two years (and three days) from my blog post regarding creating version 2.0.</p>
+      <p><a href="https://fullstacksoftwareblog.wordpress.com/2018/04/28/welcome-to-my-blog/">https://fullstacksoftwareblog.wordpress.com/2018/04/28/welcome-to-my-blog/</a></p>
+      <p>And what a trip it has been to get to this point. First and foremost I must say that working on a "real" application of this size takes a lot of time. Most weekends, vacation/holidays and many nights after my workday has ended.</p>
+      <p>Back end size (excluding tests) is 83 files and 5072 lines of code. Front end size (excluding tests because there are none) for JavaScript is 37 files and 1917 lines of code and for JSX is 18 files and 1171 lines of code. This yields a total of <b>138 files</b> and <b>8160 lines of code</b> (excluding tests). My counting tool is cloc.</p>
+      <p>By "real" I mean an application that is used by real people – my poker league. The following features made up the Minimal Viable Product (MVP)</p>
+      <h4>TLDR;</h4>
+      <p>login, logout and forgot password (which emails a code).</p>
+      <p>Show the league players, obfuscate their phone/email, and allow their information to be edited by either an admin or self.</p>
+      <p>Game in progress</p>
+      <ul>
+        <li>add existing league members to the game</li>
+        <li>add a new person to the game/league</li>
+        <li>track the player’s buy in, rebuy, yearly and quarterly side bets, finish (1 through 10), chop pot, and knocked out status</li>
+        <li>table/seating configuration (allowing for a table preference), randomly seating players and texting them their seat</li>
+        <li>a clock that show the round and time remaining that can be paused; the time remaining changed; which send a text message when a new round begins</li>
+        <li>the payouts</li>
+        <li>finalize the game (gamer over) which recalculates the season and quarterly season standings and payouts</li>
+        <li>allow only admin users to unfinalize (reopen) a game</li>
+      </ul>
+      <p>Season</p>
+      <ul>
+        <li>season details (money collected being the most important)</li>
+        <li>season standings</li>
+        <li>four quarterly seasons with the details, payouts, standings</li>
+        <li>each game with details, payouts, standing</li>
+        <li>send a season summary email when a game is finalized</li>
+      </ul>`,
+    createdAt: "May 1, 2020"
+  },
+  {
+    header: "Petal to the Metal on the Back end",
+    body: `<p>When working on the front end it is inevitable that work has to be done on the back end. Here are the branches of the commits that were done in tandem with the front end:</p>
+      <ul>
+        <li>44-get-current-game</li>
+        <li>45-get-players-api</li>
+        <li>46-add-existing-player-to-game</li>
+        <li>47-update-game-player</li>
+        <li>48-add-first-time-player-to-game</li>
+        <li>49-sort-players-and-game-players</li>
+        <li>50-get-most-recent-game</li>
+        <li>51-get-most-recent-game-for-a-season</li>
+        <li>52-seating</li>
+        <li>53-sms-notifications</li>
+        <li>54-clock-web-socket</li>
+        <li>55-clock-polling</li>
+        <li>56-forgot-password</li>
+      </ul>
+      <p>Have a look at the README in the github repo to learn more about each branch. You will have to cycle through the branches to view the README for that branch. See <a href="https://github.com/gpratte/texastoc-v2-spring-boot">https://github.com/gpratte/texastoc-v2-spring-boot</a> </p>
+      <p>Using <a href="https://www.twilio.com/">https://www.twilio.com/</a> API to send SMS text messages and using https://postmarkapp.com/ API to send emails.</p>`,
+    createdAt: "April 14, 2020"
+  },
+  {
+    header: "Petal to the Metal on the Front end",
+    body: `<p></p>
+      <p>It’s been about 5 weeks since my last blog. During that time I’ve been constantly coding the front end to make it ready to deploy at the end of April. Here are the branches of the commits:</p>
+      <ul>
+        <li>step-11-create-new-season</li>
+        <li>step-12-create-new-game</li>
+        <li>step-13-add-existing-player</li>
+        <li>step-14-update-game-player</li>
+        <li>step-15-delete-game-player</li>
+        <li>step-15-knockout-game-player</li>
+        <li>step-16-delete-game-player</li>
+        <li>step-17-add-first-time-player</li>
+        <li>step-18-move-files</li>
+        <li>step-19-finalize-game</li>
+        <li>step-20-get-season-when-game-finalized</li>
+        <li>step-21-refresh-game-spinner</li>
+        <li>step-22-seating</li>
+        <li>step-23-league-players</li>
+        <li>step-24-seating-notify</li>
+        <li>step-25-clock</li>
+        <li>step-25-clock-websocket</li>
+        <li>step-26-clock-polling</li>
+        <li>step-27-forgot-password</li>
+      </ul>
+      <p>Have a look at the README in the github repo to learn more about each branch. See <a href="https://github.com/gpratte/texastoc-v2-react-redux">https://github.com/gpratte/texastoc-v2-react-redux</a></p>`,
+    createdAt: "April 14, 2020"
+  },
+  {
+    header: "React/Redux API Error Handling",
+    body: `<p>Handle an error when calling an api by</p>
+      <ul>
+        <li>dispatch an action in the api catch block</li>
+        <li>set the error message in the league store</li>
+        <li>show the error message in the Error component</li>
+        <li>dismiss the error in the Error component by dispatching an action that clears the error message</li>
+      </ul>
+      <p>See branch step-10-api-error-handler in <a href="https://github.com/gpratte/texastoc-v2-react-redux">https://github.com/gpratte/texastoc-v2-react-redux</a>. Compare to the previous branch, step-09-must-be-logged-in, if you want to see how error handling was implemented.</p>
+      <p>Next thing to do is to wire up having the frontend call the backend to Create, Retrieve, Update and Delete (CRUD) a season.</p>`,
+    createdAt: "March 9, 2020"
+  },
+  {
     header: "React/Redux client calling Spring Boot server",
     body: `<p>It’s been a long time coming but it happened today – the client made a call to the server.</p>
       <p>Woo hoo!!!</p>
