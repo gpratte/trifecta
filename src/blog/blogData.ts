@@ -6,6 +6,62 @@ export type BlogData = {
 
 export const blogEntries: Array<BlogData> = [
   {
+    header: "Time to learn Angular",
+    body: [
+      '<p>The front end will be written using Angular 6. Angular has a Tour of Heroes tutorial. I worked through it and pushed the code to github. As I worked through the tutorial I created branches – each branch building from the previous branch.</p>' +
+      '<p>The repository can be found at <a href="https://github.com/gpratte/angular-v6-tour-of-heroes">https://github.com/gpratte/angular-v6-tour-of-heroes</a></p>' +
+      '<p>Here are the branches of the repo</p>' +
+      '<ul>' +
+      '<li>step-1-create-a-new-application</li>' +
+      '<li>step-2-change-title-and-style</li>' +
+      '<li>step-3-heroes-component</li>' +
+      '<li>step-4-hero-class</li>' +
+      '<li>step-5-uppercase-pipe</li>' +
+      '<li>step-6-edit-the-hero</li>' +
+      '<li>step-7-list-of-heroes</li>' +
+      '<li>step-8-master-detail</li>' +
+      '<li>step-9-hero-detail-component</li>' +
+      '<li>step-10-hero-service</li>' +
+      '<li>step-11-observable-hero-service</li>' +
+      '<li>step-12-message-service</li>' +
+      '<li>step-13-app-routing-heroes-url</li>' +
+      '<li>step-14-app-routing-heroes-link</li>' +
+      '<li>step-15-dashboard-component-and-route</li>' +
+      '<li>step-16-routable-hero-detail</li>' +
+      '<li>step-17-detail-go-back</li>' +
+      '<li>step-18-http-client (get many works but not get one)</li>' +
+      '<li>step-19-error-handling (get many works but not get one)</li>' +
+      '<li>step-20-http-get-one</li>' +
+      '<li>step-21-hero-update</li>' +
+      '<li>step-22-hero-add</li>' +
+      '<li>step-23-hero-delete</li>' +
+      '<li>step-24-search</li>' +
+      '</ul>' +
+      '<p>To see the angular code in action do the following:</p>' +
+      '<ul>' +
+      '<li>Install the angular cli</li>' +
+      '<li>npm install -g @angular/cli</li>' +
+      '</ul>' +
+      '<p>Run the server</p>' +
+      '<ul>' +
+      '<li>ng serve</li>' +
+      '</ul>' +
+      '<p>Access the code at <a href="http://localhost:4200">http://localhost:4200</a></p>'
+    ],
+    createdAt: "June 8, 2018"
+  },
+  {
+    header: "Exercise Swagger APIs against WireMock",
+    body: [
+      '<p>I have all APIs that are defined in Swagger Hub mocked on the WireMock server running on Heroku.</p>' +
+      '<p>To populate the APIs in WireMock you’ll need to run bash script I created to curl WireMock to create the mock APIs. Clone this github repo (<a href="https://github.com/gpratte/texastoc-v2-swagger-hub">https://github.com/gpratte/texastoc-v2-swagger-hub </a>) and run the create-api.sh bash script. You will also see the yml files for the APIs defined in Swagger Hub in this repo.</p>' +
+      '<p>The WireMock server running on Heroku gets torn down if there is no activity for a 30 minute period. Hence the bash script to create the mock APIs will need to be run each time the server is created by Heroku. You can tell when a server is created because the first call to Heroku takes 20 seconds or more and then subsequent calls take a second or less.</p>' +
+      '<p>The mock APIs do not verify the request but do return a valid response for all the APIs defined in Swagger Hub. The request verification will come later when it is time to test.</p>' +
+      '<p>So after populating the mock APIs in WireMock you can run any of the APIs in Swagger Hub.</p>'
+    ],
+    createdAt: "June 3, 2018"
+  },
+  {
     header: "WireMock to mock APIs",
     body: [
       "<p>If you have a need to mock APIs then WireMock to the rescue.</p>",
