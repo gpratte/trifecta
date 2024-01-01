@@ -6,6 +6,175 @@ export type BlogData = {
 
 export const blogEntries: Array<BlogData> = [
   {
+    header: "Version 3 is Live So What’s Next",
+    body: `<p>The modular monolith for texastoc.com version 3 is live! See <a href="https://texastoc.herokuapp.com/">https://texastoc.herokuapp.com/</a>. Note that, since it is deployed to Heroku, it may take a minute for Heroku to provision the frontend server you first hit the website. So the frontend web page can take a minute to load. Then when you log in the backend can take another minute. When the backend comes up it seeds a season and games which can also take a minute.</p>
+      <p>Although the code base is a modular monolith it still suffers from having all the modules in a single code base. That means if, after a deployment, one module has to roll back all the modules will roll back.</p>
+      <p>To remedy this I’ll be breaking the modules into their own code repositories. The server will continue to be a single war for deployment. Each repository will be able to build a deployable server to use for integration tests.</p>
+      <p>The big win to moving to separate repositories is that the deployable server will be able to use different versions of the modules. This addresses the problem of being able to roll back a module.</p>
+      <p>There will be a lot of devops work for configuring the builds for multiple repositories. I’ll do some investigation to see if moving from maven to gradle will help.</p>`,
+    createdAt: "May 3, 2021"
+  },
+  {
+    header: "Independent Chip Model: ICM Calculator",
+    body: `<p></p>
+      <p>Sometimes the players in a poker tournament will chop the pot instead of playing to end where one player takes first place. My current algorithm for chopping the money is home grown. I decided it is time to change to an official ICM algorithm.</p>
+      <p>In this day and age of open source software I thought I would easily find one or more solutions. But alas this is not to be. I could not find a single solution written in any language. Not Java, Python, Javascript, ... .</p>
+      <p>I am not going to explain how ICM works – do a Google search and you will get lots of hits. Since I could not find any code I figured I would code it myself. What I needed was a good mathematical explanation. Helps that I got my undergraduate degree in Math 🙂</p>
+      <p>I found an article from the Journal of the Mathematical Society of the Philippines which has an equation for the Malmuth-Harville equation in section 2.2 that I used for my algorithm. See  <a href="http://mathsociety.ph/matimyas/images/vol43/MarfilMatimyas.pdf">http://mathsociety.ph/matimyas/images/vol43/MarfilMatimyas.pdf.</a></p>
+      <p>As I mentioned, mine is an implementation of the Malmuth-Harville equation. I also used Heap’s algorithm for generating permutations of a list numbers. See <a href="https://en.wikipedia.org/wiki/Heap%27s_algorithm">https://en.wikipedia.org/wiki/Heap%27s_algorithm</a> .</p>
+      <p>So for those of you that need an ICM implementation (mine is written in Java) you can find one at  <a href="https://github.com/gpratte/icm-calculator">https://github.com/gpratte/icm-calculator</a>. The code is documented with comments that I hope will explain who it works.</p>
+`,
+    createdAt: "February 2, 2021"
+  },
+  {
+    header: "Spring Data JDBC Example",
+    body: `<p>In a previous blog I stated that I refactored from using Spring JDBC to Spring Data JDBC. Spring Data JDBC is an Object-Relational Mapping (ORM) framework.</p>
+      <p>To fully get my head around how to use Spring Data JDBC I created a small project that mapped the following fields</p>
+      <pre>@Id
+private int id;
+
+private int count;
+
+@MappedCollection(idColumn = "ID")
+OneToOne oneToOne;
+
+@MappedCollection
+Set&lt;Day&gt; days;
+
+@MappedCollection
+Map&lt;String, Color&gt; colors;
+
+@MappedCollection
+List&lt;Car&gt; cars;
+
+@MappedCollection
+List&lt;Orderr&gt; orders;</pre>
+      <p>You can find the code at <a href="https://github.com/gpratte/spring-data-jdbc-example">https://github.com/gpratte/spring-data-jdbc-example</a> .</p>
+`,
+    createdAt: "December 31, 2020"
+  },
+  {
+    header: "Monolith to Modular Monolith: Cucumber Integration Testing",
+    body: `<p></p>
+      <p>I resurrected and enhanced the cucumber integration tests for the player module. I first uncommented the integration module in the top level pom.xml</p>
+      <pre>&lt;modules&gt;
+  &lt;module&gt;application&lt;/module&gt;
+  &lt;module&gt;integration&lt;/module&gt;
+&lt;/modules&gt;</pre>
+      <p>Updated the cucumber version from 2.3.1 to 6.9.1.</p>
+      <p>Here is an example of one of the test scenarios</p>
+      <pre>Scenario: Update player as admin
+  An admin updates another player
+  Given a new player
+  When the admin updates the player
+  And the player is retrieved
+  Then the updated player matches</pre>
+      <p>Removed the @SpringBootTest annotation because that annotation was starting the Spring Boot application every time a test was run (which was slowing things down quite a bit). Instead I start the server from as a separate process and kept the server running.</p>`,
+    createdAt: "December 29, 2020"
+  },
+  {
+    header: "Monolith to Modular Monolith: ArchUnit",
+    body: `<p>I added ArchUnit (<a href="https://www.archunit.org">https://www.archunit.org</a>) to be able to write unit tests to enforce module separation.</p>
+      <p>In my previous blog I created the PlayerModule interface for the player module. The other modules should only use the PlayerFactory to get a concrete instance of the PlayerModule interface. The APIs in the PlayerModule reference classes in the player.model directory.</p>
+      <p>Hence other modules should be able to access the top level package of the player module to get to the factory and interface and the player.model package. Put another way, other modules should not have access to the sub-packages of the player module except player.model.</p>
+      <p>My unit test is</p>
+      <pre>/**
+ * Make sure the non-player modules (game, notification, season and supply) do not
+ * access any classes in the player.exception, player.repository and player.service
+ * packages.
+ */
+@Test
+public void playerModuleInterfaceAndModel() {
+  JavaClasses importedClasses = new ClassFileImporter().importPackages("com.texastoc.module");
+
+  noClasses().that().resideInAnyPackage("..game..", "..notification..", "..season..", "..supply..")
+    .should().dependOnClassesThat()
+    .resideInAnyPackage("..player.exception..", "..player.repository..", "..player.service..")
+    .check(importedClasses);
+}</pre>
+      <p>See branch 14-arch-unit <a href="https://github.com/gpratte/texastoc-v3-modulith/tree/14-arch-unit">https://github.com/gpratte/texastoc-v3-modulith/tree/14-arch-unit</a>.</p>`,
+    createdAt: "December 26, 2020"
+  },
+  {
+    header: "Monolith to Modular Monolith: Module Interface",
+    body: `<p>I exposed an interface (PlayerModule) that defines all the APIs made available by the player module. I also exposed a factory (PlayerModuleFactory) that other modules can use to get a concrete implementation of the PlayerModule.</p>
+      <p>There are two classes that implement the interface – PlayerService (which is the concrete class returned by the factory) and the PlayerRestController. That way all entries into the player module will use the same API.</p>
+      <p>See branch 12-player-module-interface <a href="https://github.com/gpratte/texastoc-v3-modulith/tree/12-player-module-interface">https://github.com/gpratte/texastoc-v3-modulith/tree/12-player-module-interface</a> .</p>
+      <p>I also resurrected and beefed up the unit tests. See branch 13-player-module-unit-tests <a href="https://github.com/gpratte/texastoc-v3-modulith/tree/13-player-module-unit-tests">https://github.com/gpratte/texastoc-v3-modulith/tree/13-player-module-unit-tests</a> .</p>`,
+    createdAt: "December 26, 2020"
+  },
+  {
+    header: "Monolith to Modular Monolith: Spring Data JDBC",
+    body: `<p>Oh glorious day! I’ve refactored one of the repositories from using Spring’s JdbcTemplate to Spring Data JDBC <a href="https://spring.io/projects/spring-data-jdbc">https://spring.io/projects/spring-data-jdbc</a> .</p>
+      <p>2004 saw the birth of this texastoc application. Because I abhor JPA (hibernate) I have been using the Spring’s JdbcTemplate for persisting to a relational database. By moving the PlayerRepository to Spring Data JDBC the lines of code count went from 156 to 12. I was also able to remove the RoleRepository.</p>
+      <p>Spring Data JDBC is an opinionated ORM that works on an aggregate (<a href="https://martinfowler.com/bliki/DDD_Aggregate.html">https://martinfowler.com/bliki/DDD_Aggregate.html</a>).</p>
+      <p>To bring Spring Data JDBC into the project I first updated the latest version, 2.4.1, of Spring Boot.</p>
+      <pre><parent>
+  ...
+  &lt;version&gt;2.4.1&lt;/version&gt;
+  ...
+</parent></pre>
+      <p>I refactored the player and role tables and Player and Role classes to be an aggregate. This entailed adding a foreign key field to the role table and an @Id to both classes. It also entailed moving the player’s role from a many-to-many relationship to a one-to-many. It was quite simple actually and the resulting player’s roles in the Player class now looks like the following ...</p>
+      <pre>public class Player implements Comparable<Player> {
+  ...
+  @Id
+  private int id;
+  ...
+  @MappedCollection
+  private Set roles;
+  ...
+}</pre>
+      <p>I also refactored the PlayerRepository to be a Spring Data interface as follows</p>
+      <pre>public interface PlayerRepository extends CrudRepository</pre>
+      <p>Have a look at the 11-spring-data-jdbc branch to see the result. You can always compare it to the previous branch, 10-notification-package, to see the before and after.</p>
+      <p>Just be aware that you will also see some extraneous changes when comparing branches to the CORS configuration that was needed with the new version of Spring Boot which has nothing to do with migrating to Spring Data JDBC.</p>`,
+    createdAt: "December 22, 2020"
+  },
+  {
+    header: "Monolith to Modular Monolith: Packaging",
+    body: `<p></p>
+      <p>Ten branches later and I have refactored the package structure to support a modular monolith.</p>
+      <pre>── com
+     └── texastoc
+         ├── config
+         ├── exception
+         ├── module
+         │   ├── game
+         │   ├── notification
+         │   ├── player
+         │   ├── season
+         │   ├── settings
+         │   └── supply
+         └── security</pre>
+      <b>config</b>, <b>exception</b>, and <b>security</b> are shared by all modules.</p>
+      <p>If the modules were to be broken out into microservices then the config and exception packages would be duplicated for each microservice. Also security would need to be reworked. One of the pros of a monolith is that security is done once and shared by the entire application.</p>`,
+    createdAt: "December 21, 2020"
+  },
+  {
+    header: "Monolith to Modular Monolith: Exception Handling",
+    body: `<p>My Spring Boot monolith had all the exceptions in a common package. It also has one class, RestControllerAdvise, with the @ControllerAdvice annotation to handle all the REST exceptions.</p>
+      <p>I moved the module specific exceptions into the appropriate module (e.g. moved CannotDeletePlayerException) into the player module.</p>
+      <p>I also moved the module specific exception handling (e.g. @ExceptionHandler(value = {CannotDeletePlayerException.class})) into the module controller.</p>
+      <p>I still have some common exceptions and I still have the RestControllerAdvise to handle common exceptions (e.g. NullPointerException).</p>`,
+    createdAt: "December 21, 2020"
+  },
+  {
+    header: "Refactor to a Modular Monolith",
+    body: `<p>The server I built for the texastoc poker league is a Spring Boot application. See
+<a href="https://github.com/gpratte/texastoc-v2-spring-boot">https://github.com/gpratte/texastoc-v2-spring-boot</a></p>
+      <p>It is monolith that employs a Layered Architecture:
+         <br>Controller -> Service -> Repository</p>
+      <p>The Controller layer receives REST requests which it passes on to the Service layer. The Service layer houses the business logic. The Repository layer houses the persistence.</p>
+      <p>The Layered Architecture is the cause of many a <b>ball of mud</b>.</p>
+      <p>It is time to refactor the code into a Modular Monolith (a.k.a. a Modulith). Here is a good series of articles on the subject <a href="https://www.kamilgrzybek.com/design/modular-monolith-primer/">https://www.kamilgrzybek.com/design/modular-monolith-primer/</a></p>
+      <p>The new github repository for the Modulith can be found at <a href="https://github.com/gpratte/texastoc-v3-modulith">https://github.com/gpratte/texastoc-v3-modulith</a></p>
+      <p>The modules will be <b>player</b>, <b>game</b>, <b>season</b>, <b>historical season</b>, <b>settings</b> and <b>notification</b>.</p>
+      <p>The first branch of the modulith, 01-fork-texastoc-v2, is the fork of the monolith.</p>
+      <p>The second branch, 02-game-package, moved the game related classes into the new com.texastoc.game package.</p>
+      <p>Moving classes does not make a modular monolith. More on how that will be achieved in future blogs.</p>`,
+    createdAt: "December 20, 2020"
+  },
+  {
     header: "Velocity Template for Game Summary Email Body",
     body: `<p>Before this blog I had some ugly code that would create the html for the game summary email body. Here’s a snippet ...</p>
       <pre>sb.append("&lt;td colspan=\\"2\\"&gt;Season games " + game.getSeasonGameNum() + "&lt;/td&gt;");</pre>
