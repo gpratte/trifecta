@@ -1,4 +1,7 @@
 .info-body {
-    margin: 25px;
+    text-align: center;
     font-size: 125%;
+    margin-top: 25px;
+    margin-left: 25%;
+    margin-right: 25%;
 }
