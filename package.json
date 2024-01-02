@@ -1,22 +1,36 @@
 {
-  "name": "react-router-bootstrap-fonts-typescript",
+  "name": "trifecta",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.2.1",
+    "axios": "^1.6.2",
     "bootstrap": "^5.3.2",
     "buffer": "^6.0.3",
+    "jwt-decode": "^4.0.0",
+    "lodash": "^4.17.21",
+    "moment-timezone": "^0.5.43",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.2",
+    "react-datepicker": "^4.25.0",
     "react-dom": "^18.2.0",
     "react-html-parser": "^2.0.2",
+    "react-redux": "^8.1.2",
     "react-router-dom": "^6.6.1",
     "react-scripts": "5.0.1",
+    "redux": "^4.2.1",
+    "redux-immutable-state-invariant": "^2.1.0",
     "typescript": "^4.9.5"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.202",
+    "@types/react-html-parser": "^2.0.6"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:localhost": "env-cmd -f .env.localhost npm run-script build",
+    "build:staging": "env-cmd -f .env.stagingtexastoc npm run-script build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint ."
@@ -38,8 +52,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/react-html-parser": "^2.0.6"
   }
 }

@@ -9,6 +9,9 @@ export default function Info() {
   const goToBlog = () => {
     navigate("blog");
   }
+  const goToPoker = () => {
+    navigate("poker");
+  }
   return (
     <div className="info-body">
       <h1>Gil Pratte</h1>
@@ -27,6 +30,12 @@ export default function Info() {
       <Button variant="link"
               onClick={goToBlog} >
         <i title="Blog" className="fa-solid fa-blog fa-3x"></i>
+      </Button>
+      &nbsp;&nbsp;&nbsp;
+      <Button variant="link"
+              style={{fontSize: "150%"}}
+              onClick={goToPoker} >
+        Poker
       </Button>
     </div>
   )
