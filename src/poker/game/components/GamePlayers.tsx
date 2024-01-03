@@ -4,12 +4,16 @@ import React from "react";
 import EditPlayer from "./EditPlayer";
 import {GameData, GamePlayerData} from "../model/GameDataTypes";
 import useGamePlayers from "../hooks/useGamePlayers";
-import {gameOver, isThereChop} from "../gameUtils";
+import {areAllPlacesAssigned, isThereChop} from "../gameUtils";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Finalize from "./Finalize";
 
 // @ts-ignore
 function GamePlayers(props) {
   const game: GameData = props.game;
-  const isGameOver = gameOver(game.players);
+  const isAllPlacesAssigned = areAllPlacesAssigned(game.players);
 
   const {
     showAddPlayer,
@@ -94,19 +98,44 @@ function GamePlayers(props) {
         </tbody>
       </Table>
 
-      {
-        !isGameOver &&
-        <AddPlayer showAddPlayer={showAddPlayer} setShowAddPlayer={setShowAddPlayer} game={game}/>
-      }
-
-      {
-        !isGameOver &&
-        <div>
-          <Button variant="primary" onClick={() => setShowAddPlayer(true)}>
-            Add Player
-          </Button>
-        </div>
-      }
+      <Container>
+        <Row>
+          {
+            !game.finalized && !isAllPlacesAssigned &&
+            <Col>
+              <AddPlayer showAddPlayer={showAddPlayer} setShowAddPlayer={setShowAddPlayer} game={game}/>
+              <div>
+                <Button variant="primary" onClick={() => setShowAddPlayer(true)}>
+                  Add Player
+                </Button>
+              </div>
+            </Col>
+          }
+          {
+            !game.finalized && isAllPlacesAssigned &&
+            <Col className="d-flex justify-content-end">
+              <AddPlayer showAddPlayer={showAddPlayer} setShowAddPlayer={setShowAddPlayer} game={game}/>
+              <div>
+                <Button variant="primary" onClick={() => setShowAddPlayer(true)}>
+                  Add Player
+                </Button>
+              </div>
+            </Col>
+          }
+          {
+            game.finalized && isAllPlacesAssigned &&
+            <Col>
+              <Finalize game={game}/>
+            </Col>
+          }
+          {
+            !game.finalized && isAllPlacesAssigned &&
+            <Col className="d-flex justify-content-start">
+              <Finalize game={game}/>
+            </Col>
+          }
+        </Row>
+      </Container>
     </div>
   )
 }

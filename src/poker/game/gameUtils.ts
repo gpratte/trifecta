@@ -1,7 +1,7 @@
 import {GamePlayerData} from "./model/GameDataTypes";
 import _ from "lodash";
 
-export function gameOver(gamePlayers: Array<GamePlayerData>) {
+export function areAllPlacesAssigned(gamePlayers: Array<GamePlayerData>) {
   if (!gamePlayers || gamePlayers.length === 0) {
     return false;
   }

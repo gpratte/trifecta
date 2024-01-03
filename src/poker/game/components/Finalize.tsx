@@ -1,5 +1,5 @@
 import React from "react";
-import {gameOver} from "../gameUtils";
+import {areAllPlacesAssigned} from "../gameUtils";
 import {Button} from "react-bootstrap";
 import useFinalize from "../hooks/useFinalize";
 import {GameData} from "../model/GameDataTypes";
@@ -14,7 +14,7 @@ function Finalize(props) {
     unfinalize
   } = useFinalize(game.id);
 
-  const isGameOver = gameOver(game.players);
+  const isAllPlacesAssigned = areAllPlacesAssigned(game.players);
 
   if (game.finalized) {
     return (
@@ -24,7 +24,7 @@ function Finalize(props) {
     )
   }
 
-  if (!isGameOver) {
+  if (!isAllPlacesAssigned) {
     return null;
   }
 

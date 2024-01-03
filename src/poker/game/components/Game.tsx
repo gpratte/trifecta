@@ -5,11 +5,10 @@ import { connect } from "react-redux";
 import {Accordion} from "react-bootstrap";
 import {GameData} from "../model/GameDataTypes";
 import useGame from "../hooks/useGame";
-import {gameOver} from "../gameUtils";
+import {areAllPlacesAssigned} from "../gameUtils";
 import Details from "./Details";
 import GamePlayers from "./GamePlayers";
 import ClockPolling from "./ClockPolling";
-import Finalize from "./Finalize";
 
 export interface GameContextType {
   refreshGame : (n : number) => void;
@@ -20,7 +19,7 @@ export const GameContext = createContext<GameContextType | null>(null);
 function Game(props) {
   const seasonId : number = props.seasonId;
   const game: GameData = props.game;
-  const isGameOver = gameOver(game.players);
+  const isGameOver = areAllPlacesAssigned(game.players);
 
   const {
     refreshGame
@@ -51,7 +50,6 @@ function Game(props) {
           <ClockPolling game={game}/>
         }
         <GamePlayers game={game}/>
-        <Finalize game={game}/>
       </div>
     </GameContext.Provider>
   )
