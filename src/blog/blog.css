@@ -16,7 +16,17 @@
     margin-left: 20%;
     margin-right: 20%;
 }
-table, th, td {
+.blog-table {
+    border: 2px solid black;
+    border-collapse: collapse;
+    padding: 5px;
+}
+.blog-table th {
+    border: 2px solid black;
+    border-collapse: collapse;
+    padding: 5px;
+}
+.blog-table td {
     border: 2px solid black;
     border-collapse: collapse;
     padding: 5px;

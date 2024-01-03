@@ -1183,7 +1183,7 @@ static {
      
      <h4>Angular Front End</h4>
      <p>Implemented the changes on the branch labelled <a href="https://github.com/gpratte/texastoc-v2-angular/tree/15-security-basic-auth">15-security-basic-auth</a></p>
-     <table>
+     <table class="blog-table">
        <tr>
          <th>Module</th>
          <th>Function</th>
@@ -1208,7 +1208,7 @@ static {
      <br>
      <h4>Java/Spring Back End</h4>
      <p>Implemented the changes on the branch labelled <a href="https://github.com/gpratte/texastoc-v2-spring-boot/tree/01-security-basic-auth">01-security-basic-auth</a></p>
-     <table class="table">
+     <table class="blog-table">
        <tr>
          <th>Module</th>
          <th>Function</th>
@@ -1219,7 +1219,7 @@ static {
        </tr>
        <tr>
          <td>UserController.java</td>
-         <td>\t/user endpoint to return the principal</td>
+         <td>/user endpoint to return the principal</td>
        </tr>
      </table>`,
     createdAt: "October 6, 2018"
