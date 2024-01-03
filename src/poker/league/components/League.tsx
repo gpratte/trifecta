@@ -23,6 +23,8 @@ import LeaguePlayers from "./LeaguePlayers";
 import Rounds from "./Rounds";
 import Points from "./Points";
 import {AxiosInstance} from "axios";
+import {Modal} from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 
 export interface LeagueContextType {
   newNotification(notify: NotificationData): void;
@@ -52,8 +54,12 @@ function League(props) {
   } = useNotifications(30000);
 
   const {
-    server
+    server,
+    isFirstTime,
+    setIsFirstTime
   } = useLeague(seasonId, newNotification);
+
+  const handleClose = () => setIsFirstTime(false);
 
   return (
     <LeagueContext.Provider value={{server, newNotification, isGlobalLoading, toggleLoadingGlobal}}>
@@ -72,6 +78,34 @@ function League(props) {
                              deleteNotification={deleteNotification}
                              deleteAllNotifications={deleteAllNotifications}
                              notifications={notifications}/>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Modal show={isFirstTime} onHide={handleClose}>
+                <Modal.Body>Welcome to (a staging version of) my poker application.
+                  <br/><br/>
+                  The production version can be found at www.texastoc.com since 2004.
+                  <br/><br/>
+                  Once a game has
+                  <ul>
+                    <li>1st through 10th place assigned if 10 or more players </li>
+                    <li>all places assigned if less than 10 players </li>
+                  </ul>
+                  then the game can be ended which will adjust the season standings.
+                  <br/><br/>
+                  Refresh the browser to see this message again.
+                </Modal.Body>
+                <Modal.Footer style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}>
+                  <Button variant="primary" onClick={handleClose}>
+                    Close
+                  </Button>
+                </Modal.Footer>
+              </Modal>
             </Col>
           </Row>
           <Row className="justify-content-center text-center">

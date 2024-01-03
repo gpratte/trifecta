@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {NotificationData} from "../model/NotificationDataBuilder";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
@@ -11,6 +11,8 @@ const server = axios.create({
 
 export default function useLeague(seasonId : number, newNotification: (n: NotificationData) => void) {
   const navigate = useNavigate();
+  const [isFirstTime, setIsFirstTime] = useState(!!process.env.REACT_APP_FIRST_TIME);
+
   useEffect(() => {
     server.interceptors.request.use(config => {
       const token = getToken();
@@ -34,6 +36,8 @@ export default function useLeague(seasonId : number, newNotification: (n: Notifi
   }, [])
 
   return {
-    server
+    server,
+    isFirstTime,
+    setIsFirstTime
   };
 }
