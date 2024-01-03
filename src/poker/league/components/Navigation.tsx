@@ -37,7 +37,7 @@ function Navigation (props: { notifications: Array<NotificationData>, showNotifi
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Item>
-              <Link to="/new-game">
+              <Link to="/poker/new-game">
                 <Button variant="link">New Game</Button>
               </Link>
             </Dropdown.Item>

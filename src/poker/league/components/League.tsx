@@ -79,10 +79,10 @@ function League(props) {
               <Routes>
                 <Route path="/home" element={<Home />} />
                 <Route path='/login' element={<Login />} />
-                <Route path="/current-game" element={<Game />} />
-                <Route path="/current-game/:editgameid" element={<Game />} />
+                <Route path="/current-game" element={<Game seasonId={seasonId}/>} />
+                <Route path="/current-game/:editGameId" element={<Game seasonId={seasonId}/>} />
                 <Route path="/new-game" element={<NewGame />} />
-                <Route path="/season" element={<Season />} />
+                <Route path="/season" element={<Season seasonId={seasonId}/>} />
                 <Route path="/players" element={<LeaguePlayers />} />
                 <Route path="/rounds" element={<Rounds />} />
                 <Route path="/points" element={<Points />} />

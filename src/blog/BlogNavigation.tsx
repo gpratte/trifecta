@@ -11,10 +11,10 @@ export default function BlogNavigation(props) {
   const numPerPage: number = props.numPerPage;
   const setNumPerPage: Dispatch<SetStateAction<number>> = props.setNumPerPage;
 
+  const maxPage = Math.ceil(numEntries / numPerPage);
   const changeNumPerPage = (num: number) => {
     setNumPerPage(num);
   }
-
   const previousPage = () => {
     if (page > 1) {
       setPage(page - 1);
@@ -22,7 +22,6 @@ export default function BlogNavigation(props) {
     }
   }
   const nextPage = () => {
-    const maxPage = Math.ceil(numEntries / numPerPage);
     if (page < maxPage) {
       setPage(page + 1);
       window.scrollTo(0,0);
@@ -34,15 +33,34 @@ export default function BlogNavigation(props) {
       <Row>
         <Col />
         <Col style={{textAlign: "center"}}>
-          <Button variant="link"
-                  onClick={previousPage}>
-            <i className="fa-solid fa-circle-chevron-left fa-2x"></i>
-          </Button>
-          &nbsp;&nbsp;&nbsp;Page {page}&nbsp;&nbsp;&nbsp;
-          <Button variant="link"
-                  onClick={nextPage}>
-            <i className="fa-solid fa-circle-chevron-right fa-2x"></i>
-          </Button>
+          {
+
+          }
+          {
+            page > 1 &&
+            <Button variant="link" onClick={previousPage}>
+              <i className="fa-solid fa-circle-chevron-left fa-2x"></i>
+            </Button>
+          }
+          {
+            page <= 1 &&
+            <Button variant="link" onClick={previousPage} disabled>
+              <i className="fa-solid fa-circle-chevron-left fa-2x"></i>
+            </Button>
+          }
+          &nbsp;&nbsp;&nbsp;Page {page} of {maxPage}&nbsp;&nbsp;&nbsp;
+          {
+            page !== maxPage &&
+            <Button variant="link" onClick={nextPage}>
+              <i className="fa-solid fa-circle-chevron-right fa-2x"></i>
+            </Button>
+          }
+          {
+            page === maxPage &&
+            <Button variant="link" onClick={nextPage} disabled>
+              <i className="fa-solid fa-circle-chevron-right fa-2x"></i>
+            </Button>
+          }
         </Col>
         <Col style={{textAlign: "right"}}>
           <Dropdown>

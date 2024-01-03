@@ -65,7 +65,7 @@ function Game(props) {
         <GameStandings players={players}/>
         <Payouts payouts={payouts}/>
 
-        <Link to={`/current-game/${game.id}`} >
+        <Link to={`/poker/current-game/${game.id}`} >
           <Button variant="outline-secondary"> Edit </Button>
         </Link>
       </div>

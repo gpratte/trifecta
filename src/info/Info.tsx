@@ -7,10 +7,10 @@ export default function Info() {
 
   const navigate = useNavigate();
   const goToBlog = () => {
-    navigate("blog");
+    navigate("/blog");
   }
   const goToPoker = () => {
-    navigate("poker");
+    navigate("/poker");
   }
   return (
     <div className="info-body">
