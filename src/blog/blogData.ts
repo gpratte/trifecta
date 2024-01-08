@@ -9,12 +9,14 @@ export const blogEntries: Array<BlogData> = [
     header: "Upgrade Client and Server",
     body: `<p>December 26th 2023 deployed server and client upgrades for the <a href="http://www.texastoc.com">http://www.texastoc.com</a>  website.</p>
       <p>Server upgrade old <a href="https://github.com/gpratte/texastoc-v4-integration-testing">https://github.com/gpratte/texastoc-v4-integration-testing</a> to new <a href="https://github.com/gpratte/texastoc-server-v5">https://github.com/gpratte/texastoc-server-v5</a> </p>
+      <p/>
       <ul>
         <li>upgrade from Java 11 to Java 17</li>
         <li>upgrade from SpringBoot 2.4.4 to 3.1.2</li>
         <li>renamed some database columns to avoid H2 reserved words</li>
       </ul>
       <p>Client upgrades old <a href="https://github.com/gpratte/texastoc-v4-client">https://github.com/gpratte/texastoc-v4-client</a>  to new <a href="https://github.com/gpratte/texastoc-client-v6">https://github.com/gpratte/texastoc-client-v6</a> </p>
+      <p/>
       <ul>
         <li>upgrade from React 16.12.0 to 18.2.0</li>
         <li>moved from react classes to react functional components/hooks</li>
@@ -92,6 +94,7 @@ public class ChaosAspect {
     body: `<p>Since I have done the work to hook up New Relic to monitor my application it is time to flesh out the monitoring using synthetics.</p>
       <p>"New Relic’s synthetic monitoring simulates user traffic around the world so you can detect and resolve poor performance and outages before your customers notice. Use our suite of automated, scriptable tools to monitor your external and internal websites, critical business transactions, and API endpoints."</p>
       <p>I configured</p>
+      <p/>
       <ul>
         <li>a Simple Browser monitor that checks if the web home page loads.</li>
         <li>a Ping monitor that calls an API that does not require authentication.</li>
@@ -157,6 +160,7 @@ CMD [ \\
   {
     header: "NGINX Fronting the texastoc Application",
     body: `<p>In the not too distance past</p>
+      <p/>
       <ul>
         <li>the backend was being deployed to a Tomcat webserver as a war</li>
         <li>the database was running in a MySQL server</li>
@@ -165,6 +169,7 @@ CMD [ \\
         <li>Tomcat was configured for SSL termination</li>
       </ul>
       <p>In this post I shine a light on how I used NGINX on the test server (test.texastoc.com) to</p>
+      <p/>
       <ul>
         <li>serve up the frontend as a file server</li>
         <li>reverse proxy to the backend</li>
@@ -173,6 +178,7 @@ CMD [ \\
         <li>redirect HTTP to HTTPS</li>
       </ul>
       <p>The rest of this post assumes you have done the following on your linux server</p>
+      <p/>
       <ul>
         <li>installed docker and docker-compose</li>
         <li>have the Spring Boot backend and MySQL running in docker (see last blog)</li>
@@ -608,6 +614,7 @@ static {
     body: `<p>Earlier I blogged about using Travis for Continuous Integration (CI). See <a href="https://fullstacksoftwareblog.wordpress.com/2020/02/16/travis-ci/">https://fullstacksoftwareblog.wordpress.com/2020/02/16/travis-ci/</a></p>
       <p>But CI is only only half the story for Continuous Integration and Continuous Deployment (CICD). Time to deploy the back end server and front end servers to <a href="https://www.heroku.com/">Heroku</a>.</p>
       <p>For both the back end and front end I changed the pom.xml <b>default</b> profile to build a war that can be run stand alone when deployed to Heroku. For the back end that means it uses the embedded H2 database with seed data. For the front end that means the url for the UI and for the server point to the Heroku deployments</p>
+      <p/>
       <ul>
         <li>Front end: <a href="https://texastoc.herokuapp.com">https://texastoc.herokuapp.com</a></li>
         <li>Back end: <a href="https://texastoc-server.herokuapp.com">https://texastoc-server.herokuapp.com</a></li>
@@ -651,6 +658,7 @@ static {
     header: "Version 2.0 What’s Next",
     body: `<p>What’s next for texastoc version 2.0?</p>
       <p>As I mentioned in a previous blog today, 2.0 is a Minimal Viable Product (MVP). There are a lot of features to implement to get it up to parity with 1.0.</p>
+      <p/>
       <ul>
         <li>show previous season results</li>
         <li>show the point system</li>
@@ -667,6 +675,7 @@ static {
     body: `<p>Version 2.0 of the texastoc web site went live today – continued!</p>
       <p>And what a trip it has been to get to this point.</p>
       <p>The back end consisted of 59 branches. Here is a smattering</p>
+      <p/>
       <ul>
         <li>02-create-season</li>
         <li>07-tdd-create-game</li>
@@ -681,6 +690,7 @@ static {
         <li>59-final-shake-down</li>
       </ul>
       <p>For the front end I learned how to code in React and Redux. The front end consisted of 30 branches. Here is a smattering</p>
+      <p/>
       <ul>
         <li>step-01-create-development-environment</li>
         <li>step-02-bootstrap</li>
@@ -697,6 +707,7 @@ static {
       </ul>
       <p>And don’t forget devops because it is no good if it is not deployed. There are a lot of options for deployment (virtual machine, Heroku, Amazon Web Services, ...). The main devops requirement is to do whatever is the least expensive (which puts a bigger burden on me). I went the path of a virtual machine and free SSL certificate. I already have the domain name.</p>
       <p>Devops steps (believe me there is a lot of work for each step)</p>
+      <p/>
       <ul>
         <li>Provision a virtual machine</li>
         <li>Install MySQL, create schema and seed data</li>
@@ -722,6 +733,7 @@ static {
       <p>login, logout and forgot password (which emails a code).</p>
       <p>Show the league players, obfuscate their phone/email, and allow their information to be edited by either an admin or self.</p>
       <p>Game in progress</p>
+      <p/>
       <ul>
         <li>add existing league members to the game</li>
         <li>add a new person to the game/league</li>
@@ -733,6 +745,7 @@ static {
         <li>allow only admin users to unfinalize (reopen) a game</li>
       </ul>
       <p>Season</p>
+      <p/>
       <ul>
         <li>season details (money collected being the most important)</li>
         <li>season standings</li>
@@ -745,6 +758,7 @@ static {
   {
     header: "Petal to the Metal on the Back end",
     body: `<p>When working on the front end it is inevitable that work has to be done on the back end. Here are the branches of the commits that were done in tandem with the front end:</p>
+      <p/>
       <ul>
         <li>44-get-current-game</li>
         <li>45-get-players-api</li>
@@ -768,6 +782,7 @@ static {
     header: "Petal to the Metal on the Front end",
     body: `<p></p>
       <p>It’s been about 5 weeks since my last blog. During that time I’ve been constantly coding the front end to make it ready to deploy at the end of April. Here are the branches of the commits:</p>
+      <p/>
       <ul>
         <li>step-11-create-new-season</li>
         <li>step-12-create-new-game</li>
@@ -795,6 +810,7 @@ static {
   {
     header: "React/Redux API Error Handling",
     body: `<p>Handle an error when calling an api by</p>
+      <p/>
       <ul>
         <li>dispatch an action in the api catch block</li>
         <li>set the error message in the league store</li>
@@ -879,6 +895,7 @@ static {
       <p>The modal dialog was a part of the react component that shows a list of the players in the game. At the bottom of the list there is a button to add a player which bring up the modal dialog. As per the bootstrap documentation I put the modal state to show/hide in the react component.</p>
       <p>I wanted to move the modal dialog into its own react component. This means the button to add a player is in one component and the modal itself is in another component. How to handle the show/hide state? Redux of course!</p>
       <p>To get this to work the following changes were made</p>
+      <p/>
       <ul>
         <li>the redux store now has a showAddExistingPlayer boolean.</li>
         <li>a new TOGGLE_ADD_EXISTING_PLAYER_TO_GAME action</li>
@@ -893,6 +910,7 @@ static {
     header: "Redux",
     body: `<p>I have a lot of React components so it is time to add Redux to the mix. In an earlier post, Learn Redux, I worked through the redux.js.org tutorial. Adding redux to my poker league application front end was the goal.</p>
       <p>Wiring up redux in this application was difficult for two reasons</p>
+      <p/>
       <ol>
         <li>learning redux for the first time</li>
         <li>I have a lot of react components</li>
@@ -906,6 +924,7 @@ static {
     header: "React Bootstrap",
     body: `<p>Added React Bootstrap to the poker league game I’ve been working on (see previous post).</p>
       <p>It’s nice to add Bootstrap to the app for two reasons:</p>
+      <p/>
       <ol>
         <li>It looks nice. Nice buttons, tables, rows and columns, ...</li>
         <li>Functionality – accordions, modal dialogs, ...</li>
@@ -923,6 +942,7 @@ static {
   {
     header: "Learn Redux",
     body: `<p>I worked through the <a href="https://redux.js.org/basics/basic-tutorial">basic redux tutorial</a>. I learned about</p>
+      <p/>
       <ul>
         <li>actions</li>
         <li>reducers</li>
@@ -937,6 +957,7 @@ static {
   {
     header: "My First React App – Code Review Changes",
     body: `<p>Fortunately for me a couple of guys on my team at work are fluent in React. I asked them to do a code review and got a lot of good feedback. As a result of the feedback the  <a href="https://github.com/gpratte/react-todo-list/tree/step-10-code-review-refactor">step-10-code-review-refactor branch</a> has the following changes</p>
+      <p/>
       <ul>
         <li>Use .jsx extension for components</li>
         <li>Use lodash for better performance for map, filter, etc.</li>
@@ -955,6 +976,7 @@ static {
       <p>Since then I watched Wes Bos’ React For Beginners course.</p>
       <p>The next step was to write my own react app from scratch – a todo list which can be found at <a href="https://github.com/gpratte/react-todo-list">https://github.com/gpratte/react-todo-list</a>.</p>
       <p>The stumbling blocks were</p>
+      <p/>
       <ul>
         <li>handing events</li>
         <li>state and properties</li>
@@ -962,6 +984,7 @@ static {
       <p>I went back and reviewed these topics more than once in both the reactjs.org tutorial and the Wes Bos course.</p>
       <p>I also read some articles found from internet searching (e.g. How to Display a List in React).</p>
       <p>As is my modus operandi, when developing new code, I built up the tutorial on branches.</p>
+      <p/>
       <ul>
         <li>step-01-create-development-environment</li>
         <li>step-02-ui-markup</li>
@@ -981,6 +1004,7 @@ static {
       <p>I worked my way through the Tutorial: Intro to React.</p>
       <p>See my github repo for the code at <a href="https://github.com/gpratte/react-tic-tac-toe-tutorial-v16">https://github.com/gpratte/react-tic-tac-toe-tutorial-v16</a></p>
       <p>As is my modus operandi when developing new code I built up the tutorial on branches.</p>
+      <p/>
       <ul>
         <li>step-1-setup-for-the-tutorial</li>
         <li>step-2-overview-making-an-interactive-component</li>
@@ -1007,6 +1031,7 @@ static {
       <p>The following is from the top of the readme in my github repository for the PoC (see <a href="https://github.com/gpratte/spring-boot-acceptance-test-mocks">https://github.com/gpratte/spring-boot-acceptance-test-mocks</a>)</p>
       <p>A Spring Boot project that connects to various resources (database, mongo, rest calls, JMS messaging, Rabbit messaging, legacy). Mock the connections for acceptance testing.</p>
       <p>When running tests the server uses</p>
+      <p/>
       <ul>
         <li>An embedded ActiveMQ server (to mock JMS)</li>
         <li>Wiremock to mock the REST calls</li>
@@ -1014,24 +1039,28 @@ static {
         <li>An embedded Qpid server (to mock RabbitMQ)</li>
       </ul>
       <h4>Listen to JMS message flow ...</h4>
+      <p/>
       <ol>
         <li>Receive a Todo JMS message</li>
         <li>Make a REST call (for no good reason)</li>
         <li>Persist the Todo in a relational database</li>
       </ol>
       <p>The server is setup to</p>
+      <p/>
       <ol>
         <li>Listen to the mailbox queue of an external JMS ActiveMQ server</li>
         <li>Makes a REST call to http://worldclockapi.com/api/json/utc/now</li>
         <li>Inserts into a Postgres database</li>
       </ol>
       <h4>REST POST to create a Todo flow ...</h4>
+      <p/>
       <ol>
         <li>Expose a POST endpoint to create a Todo</li>
         <li>Persist the Todo in a relational database</li>
         <li>Send the Todo as JSON to RabbitMQ</li>
       </ol>
       <p>The server is setup to</p>
+      <p/>
       <ol>
         <li>With a RestController with a PostMapping on /api/todos</li>
         <li>The controller calls a service which calls the repository to insert into a Postgres database</li>
@@ -1045,18 +1074,21 @@ static {
       <p>The following is from the top of the readme in my github repository for the POC.</p>
       <p>A Spring Boot project that connects to various resources (database, mongo, rest calls, JMS messaging, Rabbit messaging, legacy). Mock the connections for acceptance testing.</p>
       <p>The flow is ...</p>
+      <p/>
       <ol>
         <li>Receive a Todo message</li>
         <li>Make a REST call (for no good reason)</li>
         <li>Persist the Todo in a relational database</li>
       </ol>
       <p>The server is setup to</p>
+      <p/>
       <ol>
         <li>Listen to the mailbox queue of an external JMS ActiveMQ server</li>
         <li>Makes a REST call to http://worldclockapi.com/api/json/utc/now</li>
         <li>Inserts into a Postgres database</li>
       </ol>
       <p>When running tests the server uses</p>
+      <p/>
       <ol>
         <li>An embedded ActiveMQ server</li>
         <li>Wiremock to mock the REST calls</li>
@@ -1091,6 +1123,7 @@ static {
       <h4>Step 2. Integrate CircleCI to deploy to Heroku</h4>
       <p>Next I followed the CircleCI instructions to integrate with Heroku. See <a href="https://circleci.com/integrations/heroku/">https://circleci.com/integrations/heroku/</a></p>
       <p>First I had to set a couple environment variables</p>
+      <p/>
       <ul>
         <li>HEROKU_APP_NAME</li>
         <li>HEROKU_API_KEY</li>
@@ -1106,6 +1139,7 @@ static {
     body: `<p>I took what I learned in my last blog about JWT Authentication and Authorization and applied it to my Spring Boot server application.</p>
       <p>Most of the time was spent updating the integration tests. Almost every endpoint now requires authentication. The test were enhanced to login a player which returns a token. The token is then passed in the HTTP Authorization header.</p>
       <p>Another departure from the proof of concept in my last blog is to</p>
+      <p/>
       <ul>
         <li>use the player table instead of the user table</li>
         <li>use email instead of username</li>
@@ -1124,6 +1158,7 @@ static {
     header: "CircleCI for Continuous Integration",
     body: `<p>Using the free plan for CircleCI to build and run tests. Chose the CircleCI free plan and use my github credentials to log into CircleCI. Chose the texastoc-v2-spring-boot github repo for CircleCI to use. CircleCI added a key to this repo.</p>
       <p>I followed the CircleCI directions to</p>
+      <p/>
       <ul>
         <li>add a .circleci directory to my project</li>
         <li>add a config.yml in the .circleci directory for a Java maven project</li>
@@ -1149,6 +1184,7 @@ static {
       <p>I am following Test Driven Development (TDD) writing the business logic. Mocking out the persistence.</p>
       <p>I am employing Cucumber tests for the endpoints. Persistence is provided by an embedded H2 in memory database.</p>
       <p>As usual I number the branches. Here are the branches (copied from the readme).</p>
+      <p/>
       <ul>
         <li>01-security-basic-auth</li>
         <li>02-create-season</li>
@@ -1236,6 +1272,7 @@ static {
   {
     header: "Architecture – C4 model",
     body: `<p>Time for some architecture diagrams. There were two front runners that I wanted to explore for documenting the architecture</p>
+      <p/>
       <ul>
         <li>C4 model (see <a href="https://c4model.com/">https://c4model.com/</a>)</li>
         <li>Arc42 (see <a href="https://arc42.org/">https://arc42.org/</a>)</li>
@@ -1257,6 +1294,7 @@ static {
        <p>See <a href="https://github.com/gpratte/texastoc-v2-angular">https://github.com/gpratte/texastoc-v2-angular</a></p>
        <p>As was the case in the last post I built up the front end in branches.</p>
        <p>Here are the branches of the repo</p>
+      <p/>
        <ul>
        <li>01-login</li>
        <li>02-default-routing</li>
@@ -1274,11 +1312,13 @@ static {
        <li>14-existing-player</li>
        </ul>
        <p>To see the angular code in action do the following:</p>
+       <p/>
        <ul>
        <li>Install the angular cli</li>
        <li>npm install -g @angular/cli</li>
        </ul>
        <p>Run the server</p>
+       <p/>
        <ul>
        <li>ng serve</li>
        </ul>
@@ -1291,6 +1331,7 @@ static {
     body: `<p>The front end will be written using Angular 6. Angular has a Tour of Heroes tutorial. I worked through it and pushed the code to github. As I worked through the tutorial I created branches – each branch building from the previous branch.</p>
       <p>The repository can be found at <a href="https://github.com/gpratte/angular-v6-tour-of-heroes">https://github.com/gpratte/angular-v6-tour-of-heroes</a></p> 
       <p>Here are the branches of the repo</p> 
+      <p/>
       <ul> 
       <li>step-1-create-a-new-application</li> 
       <li>step-2-change-title-and-style</li> 
@@ -1318,11 +1359,13 @@ static {
       <li>step-24-search</li> 
       </ul> 
       <p>To see the angular code in action do the following:</p> 
+      <p/>
       <ul> 
       <li>Install the angular cli</li> 
       <li>npm install -g @angular/cli</li> 
       </ul> 
       <p>Run the server</p> 
+      <p/>
       <ul> 
       <li>ng serve</li> 
       </ul> 
@@ -1345,31 +1388,38 @@ static {
       <p>In the last blog I have defined APIs in swagger hub. Now I need a way to exercise those APIs. I’m very glad to have found WireMock.</p>
       <p>I followed the getting started guide to run WireMock locally (<a href="http://wiremock.org/docs/getting-started/">http://wiremock.org/docs/getting-started/ </a>). It must be a Spring Boot jar 🙂 </p>
       <p>I downloaded the standalone jar and ran it on port 9999.</p>
+      <p/>
       <ul>
       <li>java -jar wiremock-standalone-2.18.0.jar –port 9999</li>
       </ul>
       <p>I then added a stub API</p>
+      <p/>
       <ul>
       <li>curl -X POST http://localhost:9999/__admin/mappings -d &apos;{ "request": { "method": "GET", "url": "/hello1" }, "response": { "body": "Hello world!" }}&apos;</li>
       </ul>
       <p>Exercise the stub</p>
+      <p/>
       <ul>
       <li>curl http://localhost:9999/hello1</li>
       </ul>
+      <p/>
       <p>Added a new stub to return a json body
       <ul>
       <li>curl -X POST http://localhost:9999/__admin/mappings -d &apos;{ "request": { "method": "GET", "url": "/hello2" }, "response": { "jsonBody": {"Hello": "world!" }}}&apos;
       </ul>
       <p>Exercise the stub",
+      <p/>
       <ul>
       <li>curl http://localhost:9999/hello2</li>",
       </ul>
       <p>To see all stub mappings",
+      <p/>
       <ul>
       <li>curl http://localhost:9999/__admin/</li>",
       </ul>
       <p>See <a href="http://wiremock.org/docs/stubbing/">http://wiremock.org/docs/stubbing/</a> for more ways to stub.</p>
       <p>Shutdown the local server
+      <p/>
       <ul>
       <li>curl -X POST http://localhost:9999/__admin/shutdown</li>
       </ul>",
@@ -1409,6 +1459,7 @@ static {
     header: "Next User Interface (mockups)",
     body: `<p>The next thing to do is to come up with the mockups for the web pages.</p>
       <p>I am not a UX nor a UI designer. In fact, I’m terrible at it. My artistic skills do not go beyond drawing stick men. I can get away with poor user experience because</p>
+      <p/>
       <ul>
       <li>I’m working for free</li>
       <li>Only about 100 people will ever use the application.</li>
@@ -1436,6 +1487,7 @@ static {
       <p>To see the running application visit <a href="https://www.texastoc.com">https://www.texastoc.com></a><p>
       <p>To see the source code visit <a href="https://github.com/gpratte/texastoc">https://github.com/gpratte/texastoc</a></p>
       <p>The app does thing like:</p>
+      <p/>
       <ul>
       <li>Allows guest to view the site and obfuscates names and dollar amounts</li>
       <li>Add players to a game</li>
@@ -1450,6 +1502,7 @@ static {
       <li>...</li>
       </ul>
       <p>It is time to refactor to</p>
+      <p/>
       <ul>
       <li>Spring Boot for the backend</li>
       <li>Progressive web app using Angular for the front end</li>
@@ -1461,6 +1514,7 @@ static {
   {
     header: "Hello",
     body: `<p>I am a software developer. My wheelhouse is backend development in Java/Spring. That being said I also<p>
+      <p/>
       <ul>
       <li>write frontend code from time to time</li>
       <li>have professionally developed in assembler (Intel x86 processors), C, python and node.js</li>

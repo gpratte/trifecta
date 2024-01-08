@@ -19,18 +19,19 @@
     "react-router-dom": "^6.6.1",
     "react-scripts": "5.0.1",
     "redux": "^4.2.1",
-    "redux-immutable-state-invariant": "^2.1.0",
-    "typescript": "^4.9.5"
+    "redux-immutable-state-invariant": "^2.1.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.202",
-    "@types/react-html-parser": "^2.0.6"
+    "@types/react-html-parser": "^2.0.6",
+    "env-cmd": "^10.1.0",
+    "typescript": "^4.9.5"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:localhost": "env-cmd -f .env.localhost npm run-script build",
-    "build:staging": "env-cmd -f .env.stagingtexastoc npm run-script build",
+    "build:staginggilpratte": "env-cmd -f .env.staginggilpratte npm run-script build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint ."

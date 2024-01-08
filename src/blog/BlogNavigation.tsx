@@ -31,11 +31,8 @@ export default function BlogNavigation(props) {
   return (
     <Container className="blog-nav">
       <Row>
-        <Col />
-        <Col style={{textAlign: "center"}}>
-          {
-
-          }
+        <Col className="d-none d-md-block" />
+        <Col className="text-end text-md-center">
           {
             page > 1 &&
             <Button variant="link" onClick={previousPage}>
@@ -48,7 +45,7 @@ export default function BlogNavigation(props) {
               <i className="fa-solid fa-circle-chevron-left fa-2x"></i>
             </Button>
           }
-          &nbsp;&nbsp;&nbsp;Page {page} of {maxPage}&nbsp;&nbsp;&nbsp;
+          {page} / {maxPage}
           {
             page !== maxPage &&
             <Button variant="link" onClick={nextPage}>
@@ -62,10 +59,10 @@ export default function BlogNavigation(props) {
             </Button>
           }
         </Col>
-        <Col style={{textAlign: "right"}}>
+        <Col className="text-start text-md-end">
           <Dropdown>
             <Dropdown.Toggle variant="dark" id="dropdown-basic">
-              Number per page: {numPerPage}
+              Show {numPerPage}
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
