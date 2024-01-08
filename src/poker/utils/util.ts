@@ -63,3 +63,7 @@ export function tokenExpired(token: string) {
   const expired = decoded.exp;
   return nowInSeconds > expired!;
 }
+
+export function prefixRoute(): string {
+  return process.env.REACT_APP_ROUTING_PREFIX || '';
+}

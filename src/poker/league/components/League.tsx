@@ -25,12 +25,14 @@ import Points from "./Points";
 import {AxiosInstance} from "axios";
 import {Modal} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
+import {prefixRoute} from "../../utils/util";
 
 export interface LeagueContextType {
   newNotification(notify: NotificationData): void;
   isGlobalLoading: boolean;
   toggleLoadingGlobal(show: boolean): void;
-  server: AxiosInstance
+  server: AxiosInstance;
+  routePrefix: string;
 }
 export const LeagueContext = createContext<LeagueContextType | null>(null);
 
@@ -38,6 +40,7 @@ export const LeagueContext = createContext<LeagueContextType | null>(null);
 function League(props) {
 
   const seasonId : number = props.seasonId;
+  const routePrefix: string = prefixRoute();
 
   const {
     newNotification,
@@ -62,7 +65,8 @@ function League(props) {
   const handleClose = () => setIsFirstTime(false);
 
   return (
-    <LeagueContext.Provider value={{server, newNotification, isGlobalLoading, toggleLoadingGlobal}}>
+    <LeagueContext.Provider value={{server, newNotification, isGlobalLoading,
+      toggleLoadingGlobal, routePrefix}}>
       <div>
         <Loading isLoading={isGlobalLoading}/>
         <Navigation notifications={notifications} showNotifications={showNotificationsPanel}/>
@@ -93,6 +97,8 @@ function League(props) {
                     <li>all places assigned if less than 10 players </li>
                   </ul>
                   then the game can be ended which will adjust the season standings.
+                  <br/><br/>
+                  Login with email "guest@gilpratte.com" password "password"
                   <br/><br/>
                   Refresh the browser to see this message again.
                 </Modal.Body>

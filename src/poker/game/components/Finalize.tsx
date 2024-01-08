@@ -18,8 +18,8 @@ function Finalize(props) {
 
   if (game.finalized) {
     return (
-      <Button variant="primary" onClick={unfinalize}>
-        <i className="fas fa-lock"/>
+      <Button variant="primary" onClick={unfinalize} >
+        <i className="fas fa-lock" title="Press to unlock"/>
       </Button>
     )
   }
