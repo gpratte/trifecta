@@ -60,7 +60,7 @@ function League(props) {
     server,
     isFirstTime,
     setIsFirstTime
-  } = useLeague(seasonId, newNotification);
+  } = useLeague(seasonId, newNotification, routePrefix);
 
   const handleClose = () => setIsFirstTime(false);
 

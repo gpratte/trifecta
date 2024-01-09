@@ -16,7 +16,7 @@ function useNewGame() {
   const [startDate, setStartDate] = useState((new Date()))
   const [currentSeasonId, setCurrentSeasonId] = useState(0)
   const [leaguePlayers, setLeaguePlayers] = useState([] as Array<LeaguePlayerData>);
-  const {server, toggleLoadingGlobal, newNotification} = useContext(LeagueContext) as LeagueContextType;
+  const {server, toggleLoadingGlobal, newNotification, routePrefix} = useContext(LeagueContext) as LeagueContextType;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,7 +64,7 @@ function useNewGame() {
         startDate.getFullYear(),
         parseInt(e.target.elements.hostId.value));
       refreshGame(game.id);
-      navigate(`/poker/current-game/${game.id}`)
+      navigate(`${routePrefix}/current-game/${game.id}`)
     } catch (error) {
       newNotification(new NotificationDataBuilder()
         .withObj(error)

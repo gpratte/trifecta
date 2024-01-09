@@ -1,23 +1,25 @@
-import React from "react";
+import React, {useContext} from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Col from "react-bootstrap/Col";
 import {Link, useNavigate} from "react-router-dom";
 import {Badge, Button, Dropdown} from "react-bootstrap";
 import loginClient from "../../clients/loginClient";
 import {NotificationData} from "../model/NotificationDataBuilder";
+import {LeagueContext, LeagueContextType} from "./League";
 
 function Navigation (props: { notifications: Array<NotificationData>, showNotifications: () => void }) {
+  const {routePrefix} = useContext(LeagueContext) as LeagueContextType;
   const navigate = useNavigate();
   const signOut = () => {
     loginClient.logout();
-    navigate("/poker/login");
+    navigate(`${routePrefix}/login`);
   }
 
   return (
     <Navbar expand="lg" bg="dark" variant="dark">
       <Col>
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <Link to="/poker/home">
+        <Link to={`${routePrefix}/home`}>
           <i className="nav-home fa-solid fa-house"></i>
         </Link>
         &nbsp;&nbsp;&nbsp;
@@ -37,7 +39,7 @@ function Navigation (props: { notifications: Array<NotificationData>, showNotifi
           </Dropdown.Toggle>
           <Dropdown.Menu>
             <Dropdown.Item>
-              <Link to="/poker/new-game">
+              <Link to={`${routePrefix}/new-game`}>
                 <Button variant="link">New Game</Button>
               </Link>
             </Dropdown.Item>

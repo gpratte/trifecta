@@ -5,14 +5,14 @@ import {useNavigate} from "react-router-dom";
 import {useContext} from "react";
 
 export default function useLogin() {
-  const {server, toggleLoadingGlobal, newNotification} = useContext(LeagueContext) as LeagueContextType;
+  const {server, toggleLoadingGlobal, newNotification, routePrefix} = useContext(LeagueContext) as LeagueContextType;
   const navigate = useNavigate();
 
   const login = async (email: string, password: string) => {
     try {
       toggleLoadingGlobal(true);
       await loginClient.login(server, email, password);
-      navigate("/poker/home");
+      navigate(`${routePrefix}/home`);
     } catch (error) {
       newNotification(new NotificationDataBuilder()
         .withObj(error)
