@@ -1,11 +1,13 @@
-import React from "react";
+import React, {useContext} from "react";
 import {getToken} from "../../utils/util";
 import {Form} from "react-bootstrap";
 import Button from 'react-bootstrap/Button';
 import {Link, Navigate} from "react-router-dom";
 import useLogin from "../hooks/useLogin";
+import {LeagueContext, LeagueContextType} from "../../league/components/League";
 
 const Login = () => {
+  const {routePrefix} = useContext(LeagueContext) as LeagueContextType;
   const {
     login,
   } = useLogin();
@@ -23,7 +25,7 @@ const Login = () => {
 
   if (getToken()) {
     return (
-      <Navigate to={"/poker/home"} replace={true} />
+      <Navigate to={`${routePrefix}/home`} replace={true} />
     )
   }
   return (

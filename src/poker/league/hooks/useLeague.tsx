@@ -9,7 +9,7 @@ const server = axios.create({
   timeout: 30000
 });
 
-export default function useLeague(seasonId : number, newNotification: (n: NotificationData) => void) {
+export default function useLeague(seasonId : number, newNotification: (n: NotificationData) => void, routePrefix: string) {
   const navigate = useNavigate();
   const [isFirstTime, setIsFirstTime] = useState(!!process.env.REACT_APP_FIRST_TIME);
 
@@ -19,18 +19,18 @@ export default function useLeague(seasonId : number, newNotification: (n: Notifi
       if (token) {
         if (tokenExpired(token)) {
           clearToken();
-          navigate("/poker/login");
+          navigate(`${routePrefix}/login`);
         } else {
           config.headers['Authorization'] = `Bearer ${token}`;
         }
       } else if ("/api/v4/login" !== config.url && "/api/v4/settings" !== config.url) {
         // login and settings do not need a token but all others do
-        navigate("/poker/login");
+        navigate(`${routePrefix}/login`);
       }
       return config;
     });
 
-    navigate("/poker/home")
+    navigate(`${routePrefix}/home`)
 
     // eslint-disable-next-line
   }, [])
