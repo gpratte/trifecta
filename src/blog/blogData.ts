@@ -20,6 +20,7 @@ export const blogEntries: Array<BlogData> = [
       <ul>
         <li>upgrade from React 16.12.0 to 18.2.0</li>
         <li>moved from react classes to react functional components/hooks</li>
+        <li>TypeScript</li>
         <li>using react state more so less dependent on redux</li>
         <li>show spinner when component loading</li>
         <li>vastly improved notification components</li>
